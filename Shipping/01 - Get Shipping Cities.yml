@@ -20,8 +20,12 @@ docs: |-
   ## Purpose
   Fetch all available delivery cities supported by RedStar.
 
+  ---
+
   ## When Frontend Should Call This
   Call this immediately when the user opens the checkout page.
+
+  ---
 
   ## Auth
   No authentication required.
@@ -36,6 +40,7 @@ docs: |-
   - `name`
 
   ## Example Output
+  ```json
   [
     {
       "id": 6,

@@ -25,3 +25,73 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+
+docs: |-
+  #Endpoint: 
+  `POST /api/shipping/calculate-fee`
+  ## Purpose:
+  ---
+  This endpoint calculates the shipping fee for the user's cart based on the shipping city and town. The frontend will use this to display the final delivery fee to the user before proceeding to payment.
+
+  ## Request:
+  Method: POST
+  `URL: /api/shipping/calculate-fee`
+  Headers:
+  Authorization: Bearer <user_token>
+  Content-Type: application/json
+
+  # Request Body:
+  - recipientCity: The city abbreviation (e.g., "ABV", "LAG").
+  - recipientTownID: The town ID for the selected town.
+  - weight: The total weight of the items in the user's cart (needed to calculate the delivery fee).
+
+  ## Example Request Body:
+  ```json
+  {
+    "recipientCity": "ABV",
+    "recipientTownID": 3895,
+    "weight": 1
+  }
+  Response:
+
+  Successful Response (Shipping Fee Calculation):
+
+  {
+    "success": true,
+    "message": "Delivery fee calculated successfully",
+    "checkout": {
+      "pricing": {
+        "subtotal": 1900000,
+        "deliveryFee": 8761,
+        "vatAmount": 657,
+        "shippingTotal": 9418,
+        "totalAmount": 1909418
+      },
+      "billingAddress": { ... },
+      "shippingAddress": { ... }
+    }
+  }
+
+  Error Response:
+
+  {
+    "success": false,
+    "message": "Some cart items are unavailable or out of stock",
+    "unavailableItems": [
+      {
+        "productId": "69906a5219d21d11c33baaa5",
+        "name": "iPhone 14 Pro"
+      }
+    ]
+  }
+
+  ```
+  ---
+  # Description:
+  - Calculate Delivery Fee: This endpoint uses the recipient city, town, and weight of the cart to calculate the shipping fee.
+  Input:
+  - recipientCity: The abbreviation of the destination city (e.g., "ABV", "LAG").
+  - recipientTownID: The ID of the destination town (e.g., 3895 for Gwarinpa).
+  - weight: The total weight of the items in the user's cart.
+  Output:
+  shipping fee and total amount including the subtotal, VAT, and delivery fee.

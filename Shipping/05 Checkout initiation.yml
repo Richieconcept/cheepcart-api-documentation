@@ -52,18 +52,22 @@ settings:
   maxRedirects: 5
 
 docs: |-
-  Endpoint: POST /api/checkout/initialize
-  Purpose:
+  ## Endpoint: POST /api/checkout/initialize
+  ## Purpose:
 
   This endpoint initializes the checkout process by accepting the user's billing address, shipping address, and other relevant details. It calculates the shipping fee, validates the cart, and returns the final checkout summary.
 
-  Request:
+  ---
+  ## Request:
   Method: POST
   URL: /api/checkout/initialize
   Headers:
   Authorization: Bearer <user_token>
   Content-Type: application/json
-  Request Body:
+
+  ---
+  # Request Body:
+  ```json
   {
     "shipToDifferentAddress": true,
     "recipientCity": "ABV",
@@ -97,6 +101,8 @@ docs: |-
   Response:
 
   If the checkout is successful:
+
+  ---
 
   {
     "success": true,
@@ -171,7 +177,11 @@ docs: |-
       }
     ]
   }
-  Description:
+
+  ```
+
+  ---
+  # Description:
   Validation: This endpoint validates the user's billing address and shipping address.
   Shipping Fee Calculation: It uses RedStar API to calculate the shipping fee based on the provided recipient city and town.
   Final Summary: The endpoint returns the final checkout summary with subtotal, shipping fee, VAT, and total amount.

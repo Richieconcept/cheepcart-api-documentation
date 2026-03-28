@@ -13,3 +13,51 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+
+docs: |-
+  # Endpoint: `GET /api/shipping/towns/:cityAbbr`
+  Purpose:
+
+  This endpoint fetches a list of towns for a specific city based on the city abbreviation (e.g., ABV for Abuja). The frontend will use this to populate a town dropdown for the user to select their town.
+
+  ---
+
+  ## Request:
+  Method: GET
+  `URL: /api/shipping/towns/:cityAbbr`
+  ---
+  Parameters:
+  cityAbbr: The abbreviation of the city (e.g., "ABV", "LAG").
+  Headers:
+  Authorization: Bearer `<user_token>`
+  ## Response:
+
+  Successful Response (List of towns):
+  ```json
+  {
+    "success": true,
+    "towns": [
+      {
+        "id": 3895,
+        "name": "Gwarinpa"
+      },
+      {
+        "id": 3896,
+        "name": "Wuse"
+      },
+      ...
+    ]
+  }
+
+  Error Response:
+
+  {
+    "success": false,
+    "message": "City abbreviation is required"
+  }
+  ```
+  # Description:
+  Towns Dropdown: This endpoint will return a list of towns available for the selected city (using the city abbreviation).
+  Input:
+  cityAbbr: The abbreviation of the city (e.g., "ABV" for Abuja).
+  Output: A list of town objects including ID and name of each town.

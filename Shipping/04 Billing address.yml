@@ -19,21 +19,25 @@ settings:
   followRedirects: true
   maxRedirects: 5
 
-docs: |-
-  Endpoint: GET /api/checkout/billing-address
+docs: |+
+  # Endpoint: 
+  `GET /api/checkout/billing-address`
 
-  Purpose:
-  This endpoint checks if the user has a saved billing address. If it exists, it will return the billing address to be used for the checkout process. If not, it will notify the frontend to display the billing address form.
+  ## Purpose:
 
-  Request:
+  -This endpoint checks if the user has a saved billing address.  If it exists, it will return the billing address to be used for the checkout process. If not, it will notify the frontend to display the billing address form.
+
+  ---
+  ## Request:
   Method: GET
-  URL: /api/checkout/billing-address
+  `URL: /api/checkout/billing-address`
   Headers:
   Authorization: Bearer <user_token>
 
 
-  Response:
+  # Response:
   If the user has a saved billing address:
+  ```json
   {
     "success": true,
     "billingAddress": {
@@ -55,15 +59,20 @@ docs: |-
     },
     "shipToDifferentAddress": true
   }
-
+  ```
+  ---
   If the user does not have a billing address:
-
+  ```josn
   {
     "success": false,
     "message": "No billing address found. Please fill in your billing details.",
     "billingAddress": null
   }
-  Description:
-  If the billing address exists, it returns the existing data.
-  If the billing address doesn't exist, it returns a message indicating that the user needs to fill in the billing details.
-  The shipToDifferentAddress flag is returned, allowing the frontend to show the checkbox for "Ship to a different address".
+  ```
+  ---
+  **Description:**
+  - If the billing address exists, it returns the existing data.
+  - If the billing address doesn't exist, it returns a message indicating that the user needs to fill in the billing details.
+  - The shipToDifferentAddress flag is returned, allowing the frontend to show the checkbox for "Ship to a different address".
+
+
