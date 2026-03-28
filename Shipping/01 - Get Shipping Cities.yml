@@ -1,0 +1,45 @@
+info:
+  name: 01 - Get Shipping Cities
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/shipping/cities"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Get Shipping Cities
+
+  ## Purpose
+  Fetch all available delivery cities supported by RedStar.
+
+  ## When Frontend Should Call This
+  Call this immediately when the user opens the checkout page.
+
+  ## Auth
+  No authentication required.
+
+  ## Expected Frontend Use
+  Use this response to populate the **City dropdown**.
+
+  ## Important
+  Store:
+  - `abbr` → used in future API requests
+  Display:
+  - `name`
+
+  ## Example Output
+  [
+    {
+      "id": 6,
+      "abbr": "ABV",
+      "name": "ABUJA"
+    }
+  ]

@@ -1,0 +1,99 @@
+info:
+  name: Shipping
+  type: folder
+  seq: 1
+
+request:
+  auth: inherit
+
+docs:
+  content: |-
+    # Checkout Shipping Flow (Frontend Guide)
+
+    This explains what should happen when a user clicks **Checkout**.
+
+    ## Important Rule
+    Frontend does **NOT** talk directly to RedStar.
+    Frontend only talks to our backend.
+
+    ---
+
+    ## Step 1 — User opens checkout page
+    Call:
+
+    GET /api/shipping/cities
+
+    Purpose:
+    - Load all available delivery cities
+
+    Use result to populate:
+    - City dropdown
+
+    ---
+
+    ## Step 2 — User selects a city
+    Call:
+
+    GET /api/shipping/towns/:cityAbbr
+
+    Example:
+    GET /api/shipping/towns/ABV
+
+    Purpose:
+    - Load all towns under the selected city
+
+    Use result to populate:
+    - Town dropdown
+
+    ---
+
+    ## Step 3 — User selects pickup type
+
+    pickupType values:
+    - 1 = Pickup from my address
+    - 2 = Drop-off in RedStar location
+
+    If pickupType = 2:
+    Call:
+
+    GET /api/shipping/dropoff/:cityAbbr
+
+    Purpose:
+    - Load RedStar dropoff locations for selected city
+
+    Use result to populate:
+    - Dropoff location dropdown
+
+    ---
+
+    ## Step 4 — User clicks Continue
+    Call:
+
+    POST /api/shipping/calculate-fee
+
+    Purpose:
+    - Validate cart
+    - Calculate RedStar delivery fee
+    - Return checkout summary
+
+    This response should be used to show:
+    - Cart items
+    - Subtotal
+    - Delivery fee
+    - VAT
+    - Total amount
+
+    ---
+
+    ## Final Frontend Flow
+
+    Open Checkout
+    → Load Cities
+    → Select City
+    → Load Towns
+    → Select Pickup Type
+    → If Dropoff, Load Locations
+    → Click Continue
+    → Calculate Delivery Fee
+    → Show Checkout Summary
+  type: text/markdown

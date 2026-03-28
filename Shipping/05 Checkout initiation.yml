@@ -1,0 +1,178 @@
+info:
+  name: 05 Checkout initiation
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: http://localhost:5000/api/checkout/initialize
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+  body:
+    type: json
+    data: |-
+      {
+        "shipToDifferentAddress": true,
+        "recipientCity": "ABUJA",
+        "recipientTownID": 3895,
+        "billingAddress": {
+          "fullName": "John Doe",
+          "phone": "08012345678",
+          "email": "john@example.com",
+          "addressLine1": "12 Gwarinpa Estate",
+          "addressLine2": "",
+          "state": "FCT",
+          "city": "Abuja",
+          "postalCode": "900001",
+          "country": "Nigeria",
+          "redstarCityAbbr": "ABUJA",
+          "redstarTownId": 3895
+        },
+        "shippingAddress": {
+          "fullName": "Jane Doe",
+          "phone": "08087654321",
+          "email": "jane@example.com",
+          "addressLine1": "Area 15, Ekiti",
+          "addressLine2": "",
+          "state": "FCT",
+          "city": "Abuja",
+          "postalCode": "900001",
+          "country": "Nigeria",
+          "redstarCityAbbr": "ABUJA",
+          "redstarTownId": 3895
+        }
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Endpoint: POST /api/checkout/initialize
+  Purpose:
+
+  This endpoint initializes the checkout process by accepting the user's billing address, shipping address, and other relevant details. It calculates the shipping fee, validates the cart, and returns the final checkout summary.
+
+  Request:
+  Method: POST
+  URL: /api/checkout/initialize
+  Headers:
+  Authorization: Bearer <user_token>
+  Content-Type: application/json
+  Request Body:
+  {
+    "shipToDifferentAddress": true,
+    "recipientCity": "ABV",
+    "recipientTownID": 3895,
+    "billingAddress": {
+      "fullName": "John Doe",
+      "phone": "08012345678",
+      "email": "john@example.com",
+      "addressLine1": "12 Gwarinpa Estate",
+      "addressLine2": "",
+      "state": "FCT",
+      "city": "Abuja",
+      "postalCode": "900001",
+      "country": "Nigeria"
+    },
+    "shippingAddress": {
+      "fullName": "Jane Doe",
+      "phone": "08087654321",
+      "email": "jane@example.com",
+      "addressLine1": "Area 11, Abuja",
+      "addressLine2": "",
+      "state": "FCT",
+      "city": "Abuja",
+      "postalCode": "900001",
+      "country": "Nigeria",
+      "redstarCityAbbr": "ABV",
+      "redstarTownId": 3895
+    }
+  }
+  }
+  Response:
+
+  If the checkout is successful:
+
+  {
+    "success": true,
+    "message": "Checkout initialized successfully",
+    "checkout": {
+      "items": [
+        {
+          "productId": "69906a5219d21d11c33baaa5",
+          "name": "iPhone 14 Pro",
+          "slug": "iphone-14-pro",
+          "image": "https://res.cloudinary.com/demo.jpg",
+          "price": 950000,
+          "quantity": 2,
+          "subtotal": 1900000,
+          "weight": 1
+        }
+      ],
+      "pricing": {
+        "subtotal": 1900000,
+        "deliveryFee": 8761,
+        "vatAmount": 657,
+        "shippingTotal": 9418,
+        "totalAmount": 1909418
+      },
+      "billingAddress": {
+        "fullName": "John Doe",
+        "phone": "08012345678",
+        "email": "john@example.com",
+        "addressLine1": "12 Gwarinpa Estate",
+        "addressLine2": "",
+        "state": "FCT",
+        "city": "Abuja",
+        "postalCode": "900001",
+        "country": "Nigeria"
+      },
+      "shippingAddress": {
+        "fullName": "Jane Doe",
+        "phone": "08087654321",
+        "email": "jane@example.com",
+        "addressLine1": "Area 11, Abuja",
+        "addressLine2": "",
+        "state": "FCT",
+        "city": "Abuja",
+        "postalCode": "900001",
+        "country": "Nigeria"
+      },
+      "meta": {
+        "totalItems": 2,
+        "totalWeight": 2,
+        "pickupType": 1,
+        "senderCity": "ASB",
+        "recipientCity": "ABV",
+        "recipientTownID": 3895
+      },
+      "redstarRaw": {
+        "DeliveryFee": 8761,
+        "VatAmount": 657,
+        "TotalAmount": 9418
+      }
+    }
+  }
+
+  If there’s an error (e.g., missing fields or cart issues):
+
+  {
+    "success": false,
+    "message": "Some cart items are unavailable or out of stock",
+    "unavailableItems": [
+      {
+        "productId": "69906a5219d21d11c33baaa5",
+        "name": "iPhone 14 Pro"
+      }
+    ]
+  }
+  Description:
+  Validation: This endpoint validates the user's billing address and shipping address.
+  Shipping Fee Calculation: It uses RedStar API to calculate the shipping fee based on the provided recipient city and town.
+  Final Summary: The endpoint returns the final checkout summary with subtotal, shipping fee, VAT, and total amount.
+  If there’s any issue with the cart (e.g., items being out of stock), it returns an error with the unavailable items.

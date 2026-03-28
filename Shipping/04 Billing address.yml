@@ -1,0 +1,69 @@
+info:
+  name: 04 Billing address
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: http://localhost:5000/api/checkout/billing-address
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+    - name: Content-Type
+      value: application/json
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Endpoint: GET /api/checkout/billing-address
+
+  Purpose:
+  This endpoint checks if the user has a saved billing address. If it exists, it will return the billing address to be used for the checkout process. If not, it will notify the frontend to display the billing address form.
+
+  Request:
+  Method: GET
+  URL: /api/checkout/billing-address
+  Headers:
+  Authorization: Bearer <user_token>
+
+
+  Response:
+  If the user has a saved billing address:
+  {
+    "success": true,
+    "billingAddress": {
+      "_id": "69bacc0380418d00be7c5f9e",
+      "user": "698c87428cdf77f408badbb3",
+      "name": "John Doe",
+      "phone": "123456789",
+      "addressLine1": "123 Main St",
+      "addressLine2": "Apt 4B",
+      "city": "Lagos",
+      "state": "Lagos",
+      "postalCode": "234001",
+      "country": "Nigeria",
+      "isShippingAddress": false,
+      "isBillingAddress": true,
+      "createdAt": "2026-03-18T16:00:03.838Z",
+      "updatedAt": "2026-03-18T16:00:03.838Z",
+      "__v": 0
+    },
+    "shipToDifferentAddress": true
+  }
+
+  If the user does not have a billing address:
+
+  {
+    "success": false,
+    "message": "No billing address found. Please fill in your billing details.",
+    "billingAddress": null
+  }
+  Description:
+  If the billing address exists, it returns the existing data.
+  If the billing address doesn't exist, it returns a message indicating that the user needs to fill in the billing details.
+  The shipToDifferentAddress flag is returned, allowing the frontend to show the checkbox for "Ship to a different address".
