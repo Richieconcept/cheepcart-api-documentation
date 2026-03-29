@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: http://localhost:5000/api/checkout/billing-address
+  url: "{{baseUrl}}/api/checkout/billing-address"
   headers:
     - name: Authorization
       value: Bearer {{token}}

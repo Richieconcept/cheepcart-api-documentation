@@ -1,0 +1,26 @@
+info:
+  name: UPDATE IMAGES TO CLOUDINARY
+  type: http
+  seq: 2
+
+http:
+  method: PUT
+  url: http://localhost:5000 /api/upload/update
+  body:
+    type: multipart-form
+    data:
+      - name: images
+        type: file
+        value:
+          - C:\Users\Hi\Downloads\becky's flyer design.png
+      - name: oldImages
+        type: text
+        value: ""
+        contentType: '["cheepcart/general/kbfy4oaberwh3yjwhl9s"]'
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,80 @@
+info:
+  name: upload-to-cloudinary
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/upload/upload"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+  body:
+    type: multipart-form
+    data:
+      - name: images
+        type: file
+        value:
+          - C:\Users\Hi\Downloads\WhatsApp Image 2026-03-27 at 1.49.19 PM.jpeg
+      - name: images
+        type: file
+        value:
+          - C:\Users\Hi\Downloads\WhatsApp Image 2026-03-27 at 2.43.27 PM.jpeg
+      - name: images
+        type: file
+        value:
+          - C:\Users\Hi\Downloads\655932819_122122122573103905_2579480286096579906_n.jpg
+      - name: images
+        type: file
+        value:
+          - C:\Users\Hi\Downloads\WhatsApp Image 2026-03-23 at 10.12.34 AM (1).jpeg
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  `POST /api/upload/upload`
+
+  # Upload Images
+  #### Description:
+  Use this endpoint to add new images for a product, category, or any section in your app. You can upload 1 to 4 images at a time. After uploading, the API will give you URLs to display and public IDs to manage the images later.
+
+  #### Authentication:
+  - **Bearer Token** required.
+
+  #### Body Type:
+  - **Multipart Form**
+
+  #### Request Fields:
+
+  | Key      | Type  | Value / Example        | Notes                                  |
+  |----------|-------|------------------------|----------------------------------------|
+  | images   | File  | image1.jpg             | Repeat key for multiple files (max 4). |
+  | images   | File  | image2.png             | Repeat key for multiple files (max 4). |
+  | type     | Text  | products               | Optional folder (products, categories, general). |
+
+  #### Example Request:
+  ```bash
+  POST /api/upload/upload
+  Content-Type: multipart/form-data
+  Authorization: Bearer YOUR_API_TOKEN
+
+  {
+    images: [image1.jpg, image2.png],
+    type: "products"
+  }
+
+  ##Example Response:
+  ```json
+  {
+    "success": true,
+    "count": 2,
+    "images": [
+      { "url": "https://res.cloudinary.com/.../image1.webp", "public_id": "cheepcart/products/abc123" },
+      { "url": "https://res.cloudinary.com/.../image2.webp", "public_id": "cheepcart/products/xyz456" }
+    ]
+  }

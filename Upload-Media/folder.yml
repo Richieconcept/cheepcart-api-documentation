@@ -1,0 +1,27 @@
+info:
+  name: Upload-Media
+  type: folder
+  seq: 1
+
+request:
+  auth: inherit
+
+docs:
+  content: |-
+    # API Documentation: CHEEP CART IMAGE UPLOAD API
+
+    ## Overview
+
+    .
+
+    📌 CHEEP CART IMAGE UPLOAD API – BEGINNER FRIENDLY
+
+    This API allows the frontend to upload, update, and delete images for products, categories, or other parts of the app. Each endpoint is explained clearly so you know when to use it, what to send, and what to expect in return.
+
+    ---
+
+    ## Endpoints
+
+    ### 1️⃣ **Upload Images**
+    #### Endpoint:
+  type: text/markdown

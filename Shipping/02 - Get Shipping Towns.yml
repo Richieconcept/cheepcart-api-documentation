@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: http://localhost:5000
+  url: "{{baseUrl}}/api/shipping/towns/abv"
   auth: inherit
 
 settings:
