@@ -5,7 +5,10 @@ info:
 
 http:
   method: PUT
-  url: http://localhost:5000 /api/upload/update
+  url: "{{baseUrl}}/api/upload/update"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
   body:
     type: multipart-form
     data:
@@ -24,3 +27,49 @@ settings:
   timeout: 0
   followRedirects: true
   maxRedirects: 5
+
+docs: |-
+  PUT /api/upload/update
+
+
+  ## Description:
+  Replace existing images with new ones and update the database with the new public_ids.
+
+  ## Authentication:
+  - **Bearer Token** required.
+
+  ## Body Type:
+  - **Multipart Form**
+
+  ## Request Fields:
+
+  | Key      | Type  | Value / Example                                | Notes                               |
+  |----------|-------|----------------------------------------------|-------------------------------------|
+  | oldImages| Text  | ["cheepcart/products/abc123","cheepcart/products/xyz456"] | JSON array of public_ids to replace |
+  | images   | File  | newImage1.jpg                                | Repeat key for multiple files (max 4). |
+  | images   | File  | newImage2.png                                | Repeat key for multiple files (max 4). |
+  | type     | Text  | products                                     | Optional folder type.              |
+
+  #### Example Request:
+  ```bash id="9m9v5t"
+  PUT /api/upload/update
+  Content-Type: multipart/form-data
+  Authorization: Bearer YOUR_API_TOKEN
+
+  {
+    "oldImages": ["cheepcart/products/abc123", "cheepcart/products/xyz456"],
+    "images": [newImage1.jpg, newImage2.png],
+    "type": "products"
+  }
+  ```
+
+  ##Example response:
+  ```json
+  {
+    "success": true,
+    "message": "Images updated successfully",
+    "images": [
+      { "url": "https://res.cloudinary.com/.../newImage1.webp", "public_id": "cheepcart/products/new_abc123" },
+      { "url": "https://res.cloudinary.com/.../newImage2.webp", "public_id": "cheepcart/products/new_xyz456" }
+    ]
+  }
