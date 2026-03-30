@@ -1,0 +1,132 @@
+info:
+  name: Create Order
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/orders/create"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+  body:
+    type: json
+    data: |-
+      {
+        "shipToDifferentAddress": false,
+        "billingAddress": {
+          "fullName": "Test User",
+          "phone": "08012345678",
+          "email": "test@gmail.com",
+          "addressLine1": "No 1 Abuja Street",
+          "state": "FCT",
+          "city": "Abuja",
+          "town": "Wuse",
+          "postalCode": "900001",
+          "country": "Nigeria",
+          "redstarCityAbbr": "ABV",
+          "redstarTownId": 3868
+        },
+        "shippingAddress": {
+          "fullName": "Test User",
+          "phone": "08012345678",
+          "email": "test@gmail.com",
+          "addressLine1": "No 1 Abuja Street",
+          "state": "FCT",
+          "city": "Abuja",
+          "town": "Wuse",
+          "postalCode": "900001",
+          "country": "Nigeria",
+          "redstarCityAbbr": "ABV",
+          "redstarTownId": 3868
+        },
+        "recipientCity": "ABUJA",
+        "recipientTownID": 3868
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # 1️⃣ Create Order
+
+  ## Description:
+  ### Creates a new order for the authenticated user.
+
+  - Calculates shipping fees automatically using Redstar API.
+  - Validates the cart items (checks stock and availability).
+  - Saves billing and shipping addresses.
+  - Returns payment information so frontend can proceed to Paystack
+
+  ## Headers:
+  ```json
+  {
+    "Authorization": "Bearer <USER_TOKEN>",
+    "Content-Type": "application/json"
+  }
+  ```
+
+  ### Request Body:
+  ```json
+  {
+    "shipToDifferentAddress": false,
+    "billingAddress": {
+      "fullName": "User Full Name",
+      "phone": "08012345678",
+      "email": "user@example.com",
+      "addressLine1": "Street address",
+      "addressLine2": "Apartment, suite, etc.",
+      "state": "State/Region",
+      "city": "City",
+      "town": "Town",
+      "postalCode": "Postal Code",
+      "country": "Country",
+      "redstarCityAbbr": "City abbreviation for Redstar",
+      "redstarTownId": 3868
+    },
+    "shippingAddress": {
+      "fullName": "User Full Name (if different from billing)",
+      "phone": "08012345678",
+      "email": "user@example.com",
+      "addressLine1": "Street address",
+      "addressLine2": "",
+      "state": "State/Region",
+      "city": "City",
+      "town": "Town",
+      "postalCode": "Postal Code",
+      "country": "Country",
+      "redstarCityAbbr": "City abbreviation for Redstar",
+      "redstarTownId": 3868
+    },
+    "recipientCity": "Recipient City for shipping",
+    "recipientTownID": 3868
+  }
+
+  ```
+  ## Field Descriptions:
+
+  - `shipToDifferentAddress` → true if shipping to a different address than billing.
+  - `billingAddress` → snapshot of the user’s billing address.
+  - `shippingAddress` → optional if shipToDifferentAddress is true.
+  - `recipientCity` → city code for Redstar delivery calculation.
+  - `recipientTownID` → town ID for Redstar delivery calculation.
+
+  ## Sample Success Response:
+  ```json
+  {
+    "success": true,
+    "message": "Order created successfully",
+    "order": { "_id": "...", "orderNumber": "CHP-20260330-0001", ... },
+    "paymentReady": true,
+    "hasPendingOrder": false
+  }
+  ```
+  ## Errors:
+  `400` → Billing or shipping address missing.
+  `400` → recipientCity or recipientTownID missing.
+  `400` → Cart is empty or items unavailable.
+  `500` → Internal server error.

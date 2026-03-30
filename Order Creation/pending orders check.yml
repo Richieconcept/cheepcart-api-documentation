@@ -1,0 +1,55 @@
+info:
+  name: pending orders check
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/orders/pending"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |
+  # Get Pending Order
+
+  #### Endpoint: `GET /api/orders/pending`
+
+  ## Description:
+  Fetches the latest unpaid, pending order of the authenticated user. Useful to prevent creating duplicate orders if the user already has an active pending order.
+
+  ## Headers:
+  ```json
+  {
+    "Authorization": "Bearer <USER_TOKEN>"
+  }
+  ```
+
+  ## Request Description:
+  No request body required. The endpoint automatically fetches the latest pending order for the logged-in user.
+
+  ## Sample Success Response (Pending Order Exists):
+  ```json
+  {
+    "success": true,
+    "order": { "_id": "69ca82d41d13ed0cbf279f25", "orderNumber": "CHP-20260330-0001", ... }
+  }
+  ```
+
+  ### Sample Response (No Pending Order):
+  ```json
+  {
+    "success": false,
+    "message": "No pending unpaid order found"
+  }
+  ```
+  ### Errors:
+  ```json
+  404 → No pending order exists.

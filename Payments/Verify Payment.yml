@@ -1,0 +1,115 @@
+info:
+  name: Verify Payment
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/payments/verify/PAY-CHP-20260330-0001-1774884757746"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # 2️⃣ Verify Order Payment
+
+  ### 🔹 Endpoint
+  `GET /api/payment/verify/:reference`
+
+  # 🔹 Description
+  Verifies a payment after the user completes it on Paystack.
+
+  ### This endpoint:
+  - Confirms payment with Paystack
+  - Validates payment amount
+  - Updates order status to paid
+  - Deducts product stock
+  - Clears the user cart
+
+  ### 🔹 Request Headers
+  ```json
+  {
+    "Authorization": "Bearer <USER_TOKEN>"
+  }
+  ```
+
+  ### 🔹 URL Params
+  `reference` → Payment reference returned from initialize endpoint
+  Example: PAY-CHP-20260330-0001-1711800000000
+
+  ### 🔹 Request Description
+
+  No request body required.
+  The reference is used to verify payment with Paystack.
+
+  ### 🔹 Sample Success Response
+  ```json
+  {
+    "success": true,
+    "message": "Payment verified successfully",
+    "order": {
+      "_id": "69ca82d41d13ed0cbf279f25",
+      "paymentStatus": "paid",
+      "orderStatus": "confirmed"
+    },
+    "nextStep": "Create shipment with RedStar"
+  }
+  ```
+
+  ### 🔹 What Happens Internally
+  ✔ Payment verified with Paystack
+  ✔ Order marked as PAID
+  ✔ Order status → CONFIRMED
+  ✔ Product stock reduced
+  ✔ User cart cleared
+
+  ### 🔹 Error Responses
+
+  ####❌ Missing Reference
+  ```json
+  {
+    "success": false,
+    "message": "Payment reference is required"
+  }
+  ❌ Payment Failed
+  {
+    "success": false,
+    "message": "Payment was not successful"
+  }
+  ❌ Amount Mismatch
+  {
+    "success": false,
+    "message": "Paid amount does not match order total"
+  }
+  ❌ Order Not Found
+  {
+    "success": false,
+    "message": "Order not found"
+  }
+  ```
+  ## 🔥 FULL PAYMENT FLOW (Frontend Guide)
+  1. User creates order
+  2. Call POST /payment/initialize/:orderId
+  3. Redirect user to Paystack (authorizationUrl)
+  4. User completes payment
+  5. Call GET /payment/verify/:reference
+  6. Show success page
+
+  ### ⚠️ IMPORTANT NOTES (Frontend + Backend)
+  🔐 Authentication
+  All endpoints require Bearer Token
+  💳 Amount Format
+  Paystack uses kobo
+  Backend converts automatically
+
+  ###
+  🔁 Verification Method
+  Current: Manual (/verify)
+  Production: Use Paystack Webhook (recommended)

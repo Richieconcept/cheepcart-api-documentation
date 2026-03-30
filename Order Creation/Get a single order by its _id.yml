@@ -1,0 +1,124 @@
+info:
+  name: Get a single order by its _id
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/orders/69ca82d41d13ed0cbf279f25"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # 4️⃣ Get Single Order
+
+  ### Endpoint: `GET /api/orders/:id`
+
+  ### Description:
+  Fetches a single order by its _id. Only the owner of the order can access it.
+
+  ### Headers:
+  ```json
+  {
+    "Authorization": "Bearer <USER_TOKEN>"
+  }
+  ``` 
+  ### URL Parameter:
+  ```json
+  :id → The MongoDB _id of the order to fetch. Example: "69ca82d41d13ed0cbf279f25"
+  ```
+  ### Sample Success Response:
+  ```json
+  {
+    "success": true,
+    "order": {
+      "pricing": {
+        "subtotal": 40000,
+        "deliveryFee": 9816,
+        "vatAmount": 736,
+        "shippingTotal": 10552,
+        "totalAmount": 50552
+      },
+      "meta": {
+        "totalItems": 2,
+        "totalWeight": 4,
+        "pickupType": 1,
+        "senderCity": "ASABA",
+        "senderTownID": 480,
+        "recipientCity": "ABUJA",
+        "recipientTownID": 3868,
+        "shipToDifferentAddress": false
+      },
+      "_id": "69ca82d41d13ed0cbf279f25",
+      "user": "698c87428cdf77f408badbb3",
+      "customerEmail": "imobonifaceben@gmail.com",
+      "items": [
+        {
+          "productId": "69c94d49523d120bc2f3067a",
+          "name": "itel A100C 6.6\" 2GB RAM/64GB ROM 5000mAh - Titanium Gold",
+          "slug": "itel-a100c-66-2gb-ram64gb-rom-5000mah-titanium-gold",
+          "image": "https://res.cloudinary.com/dpqb1hpmc/image/upload/v1774800172/cheepcart/products/koqu6i8eiskv2kklq2na.jpg",
+          "price": 20000,
+          "quantity": 2,
+          "subtotal": 40000,
+          "weight": 4
+        }
+      ],
+      "billingAddress": {
+        "fullName": "Test User",
+        "phone": "08012345678",
+        "email": "test@gmail.com",
+        "addressLine1": "No 1 Abuja Street",
+        "addressLine2": "",
+        "state": "FCT",
+        "city": "Abuja",
+        "town": "Wuse",
+        "postalCode": "900001",
+        "country": "Nigeria",
+        "redstarCityAbbr": "ABV",
+        "redstarTownId": 3868
+      },
+      "shippingAddress": {
+        "fullName": "Test User",
+        "phone": "08012345678",
+        "email": "test@gmail.com",
+        "addressLine1": "No 1 Abuja Street",
+        "addressLine2": "",
+        "state": "FCT",
+        "city": "Abuja",
+        "town": "Wuse",
+        "postalCode": "900001",
+        "country": "Nigeria",
+        "redstarCityAbbr": "ABV",
+        "redstarTownId": 3868
+      },
+      "paymentStatus": "unpaid",
+      "paymentMethod": "paystack",
+      "paymentReference": null,
+      "paidAt": null,
+      "orderStatus": "pending",
+      "shipmentStatus": "not_created",
+      "shipmentReference": null,
+      "trackingNumber": null,
+      "shipmentCreatedAt": null,
+      "abandonedEmailSent": false,
+      "abandonedEmailSentAt": null,
+      "createdAt": "2026-03-30T14:04:04.566Z",
+      "updatedAt": "2026-03-30T14:04:04.566Z",
+      "orderNumber": "CHP-20260330-0001",
+      "__v": 0
+    }
+  }
+  ```
+  ### Error Responses:
+
+  `404` → Order not found.
+  `400` → Invalid ID format.

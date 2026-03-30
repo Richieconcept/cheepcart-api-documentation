@@ -1,0 +1,94 @@
+info:
+  name: Initialize Payment
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/payments/initialize/69ca82d41d13ed0cbf279f25"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # 1️⃣ Initialize Order Payment
+
+  ### 🔹 Endpoint
+  `POST /api/payments/initialize/:orderId`
+
+  ## 🔹 Description
+
+  Initializes payment for an order using Paystack.
+
+  ## This endpoint:
+  - Confirms the order exists
+  - Ensures the order is not already paid or cancelled
+  - Sends a request to Paystack
+  - Returns a payment link (authorization URL)
+
+  #### 👉 The frontend should redirect the user to this URL to complete payment.
+
+  ## 🔹 Request Headers
+  ```json
+  {
+    "Authorization": "Bearer <USER_TOKEN>"
+  }
+  ```
+  ### 🔹 URL Params
+  `orderId` → The ID of the order you want to pay for
+  Example: 69ca82d41d13ed0cbf279f25
+
+  ### 🔹 Request Description
+  - No request body is required.
+  - The orderId in the URL is used to fetch the order.
+
+  # 🔹 Sample Success Response
+  ```json
+  {
+    "success": true,
+    "message": "Payment initialized successfully",
+    "payment": {
+      "orderId": "69ca82d41d13ed0cbf279f25",
+      "orderNumber": "CHP-20260330-0001",
+      "paymentStatus": "pending",
+      "reference": "PAY-CHP-20260330-0001-1711800000000",
+      "amount": 50552,
+      "authorizationUrl": "https://checkout.paystack.com/xxxxx",
+      "accessCode": "xxxxxx"
+    }
+  }
+  ```
+  # 🔹 What Frontend Should Do
+  1. Call this endpoint
+  2. Get authorizationUrl
+  3. Redirect user to that URL
+  4. User completes payment on Paystack
+  🔹 Error Responses
+
+  ### ❌ Order Not Found
+  ```json
+  {
+    "success": false,
+    "message": "Order not found"
+  }
+  ```
+  ### ❌ Already Paid
+  ```json
+  {
+    "success": false,
+    "message": "This order has already been paid for"
+  }
+  ```
+  ### ❌ Cancelled Order
+  ```json
+  {
+    "success": false,
+    "message": "Cancelled orders cannot be paid for"
+  }

@@ -1,0 +1,125 @@
+info:
+  name: Get all orders for the user
+  type: http
+  seq: 3
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/orders/my-orders"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # 3️⃣ Get All Orders
+
+  #### Endpoint: `GET /api/orders/my-orders`
+
+  ## Description:
+  Returns all orders placed by the authenticated user, sorted by creation date (most recent first).
+
+  ### Headers:
+  ```json
+  {
+    "Authorization": "Bearer <USER_TOKEN>"
+    ```
+    
+  ### Request Description:
+  No request body required.
+
+  ### Sample Success Response:
+  ```json
+  {
+    "success": true,
+    "total": 1,
+    "orders": [
+      {
+        "pricing": {
+          "subtotal": 40000,
+          "deliveryFee": 9816,
+          "vatAmount": 736,
+          "shippingTotal": 10552,
+          "totalAmount": 50552
+        },
+        "meta": {
+          "totalItems": 2,
+          "totalWeight": 4,
+          "pickupType": 1,
+          "senderCity": "ASABA",
+          "senderTownID": 480,
+          "recipientCity": "ABUJA",
+          "recipientTownID": 3868,
+          "shipToDifferentAddress": false
+        },
+        "_id": "69ca82d41d13ed0cbf279f25",
+        "user": "698c87428cdf77f408badbb3",
+        "customerEmail": "imobonifaceben@gmail.com",
+        "items": [
+          {
+            "productId": "69c94d49523d120bc2f3067a",
+            "name": "itel A100C 6.6\" 2GB RAM/64GB ROM 5000mAh - Titanium Gold",
+            "slug": "itel-a100c-66-2gb-ram64gb-rom-5000mah-titanium-gold",
+            "image": "https://res.cloudinary.com/dpqb1hpmc/image/upload/v1774800172/cheepcart/products/koqu6i8eiskv2kklq2na.jpg",
+            "price": 20000,
+            "quantity": 2,
+            "subtotal": 40000,
+            "weight": 4
+          }
+        ],
+        "billingAddress": {
+          "fullName": "Test User",
+          "phone": "08012345678",
+          "email": "test@gmail.com",
+          "addressLine1": "No 1 Abuja Street",
+          "addressLine2": "",
+          "state": "FCT",
+          "city": "Abuja",
+          "town": "Wuse",
+          "postalCode": "900001",
+          "country": "Nigeria",
+          "redstarCityAbbr": "ABV",
+          "redstarTownId": 3868
+        },
+        "shippingAddress": {
+          "fullName": "Test User",
+          "phone": "08012345678",
+          "email": "test@gmail.com",
+          "addressLine1": "No 1 Abuja Street",
+          "addressLine2": "",
+          "state": "FCT",
+          "city": "Abuja",
+          "town": "Wuse",
+          "postalCode": "900001",
+          "country": "Nigeria",
+          "redstarCityAbbr": "ABV",
+          "redstarTownId": 3868
+        },
+        "paymentStatus": "unpaid",
+        "paymentMethod": "paystack",
+        "paymentReference": null,
+        "paidAt": null,
+        "orderStatus": "pending",
+        "shipmentStatus": "not_created",
+        "shipmentReference": null,
+        "trackingNumber": null,
+        "shipmentCreatedAt": null,
+        "abandonedEmailSent": false,
+        "abandonedEmailSentAt": null,
+        "createdAt": "2026-03-30T14:04:04.566Z",
+        "updatedAt": "2026-03-30T14:04:04.566Z",
+        "orderNumber": "CHP-20260330-0001",
+        "__v": 0
+      }
+    ]
+  }
+  ```
+  ### Errors:
+
+  `500` → Internal server error.

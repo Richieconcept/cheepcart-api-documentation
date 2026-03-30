@@ -1,0 +1,24 @@
+info:
+  name: Delete Order
+  type: http
+  seq: 6
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/api/orders/:orderId"
+  params:
+    - name: orderId
+      value: ""
+      type: path
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  ## eletes an order ONLY if:
+
+  orderStatus = cancelled
