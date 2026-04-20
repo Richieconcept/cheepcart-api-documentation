@@ -5,3 +5,60 @@ info:
 
 request:
   auth: inherit
+
+
+docs: |
+  # 🚚 CREATE / RETRY SHIPMENT
+
+  ## Endpoint
+  POST /api/shipments/create/:orderId
+
+  ---------------------------------------------
+
+  ## Description
+
+  This endpoint is used to:
+
+  1. Create shipment after payment
+  2. Retry shipment if failed
+  3. Return existing shipment if already created
+
+  ---------------------------------------------
+
+  ## 🔥 WHEN TO USE
+
+  ✅ Automatically after payment (backend)
+  ✅ Admin retry if shipment failed
+  ✅ Fetch shipment details safely
+
+  ---------------------------------------------
+
+  ## 🧠 BEHAVIOR
+
+  shipmentStatus = not_created → creates shipment  
+  shipmentStatus = failed → retries shipment  
+  shipmentStatus = created → returns existing shipment  
+
+  ---------------------------------------------
+
+  ## ✅ RESPONSE
+
+  {
+    "success": true,
+    "shipment": {
+      "orderId": "...",
+      "orderNumber": "...",
+      "shipmentStatus": "created",
+      "trackingNumber": "...",
+      "shipmentReference": "...",
+      "createdAt": "..."
+    }
+  }
+
+  ---------------------------------------------
+
+  ## ⚠️ IMPORTANT
+
+  This endpoint is **idempotent**
+
+  → Calling multiple times will NOT create duplicates

@@ -1,77 +1,51 @@
-info:
-  name: RETRY SHIPMENT
-  type: http
-  seq: 4
-
-http:
-  method: POST
-  url: "{{baseUrl}}/api/shipments/retry/69e0cd3fb5080e7ae3a594e6"
-  headers:
-    - name: Authorization
-      value: Bearer {{token}}
-  auth: inherit
-
-settings:
-  encodeUrl: true
-  timeout: 0
-  followRedirects: true
-  maxRedirects: 5
-
 docs: |
-  # Retry Shipment Tracking
+  # 🔁 RETRY SHIPMENT TRACKING
 
-  ## Method
+  ## Endpoint
+  POST /api/shipments/retry/:orderId
 
-  POST
-
-  ## URL
-
-  /api/shipment/retry/:orderId
-
-  ## Auth
-
-  Bearer Token (Admin only)
+  ---------------------------------------------
 
   ## Description
 
-  Retries fetching shipment status from Redstar when tracking fails.
+  Forces immediate tracking update for a shipment.
 
-  ## When to Call (Frontend)
+  ---------------------------------------------
 
-  * Admin clicks "Retry"
-  * When shipment has error or retry count > 0
+  ## WHEN TO USE
 
-  ## Params
+  ✅ Admin clicks retry  
+  ✅ shipmentRetryCount > 0  
+  ✅ shipmentError exists  
 
-  orderId (URL param)
+  ---------------------------------------------
 
-  ## Example Request
+  ## WHAT IT DOES
 
-  POST /api/shipment/retry/69e0b39e4be2b573dcc7274a
+  → Calls Redstar API  
+  → Updates deliveryStatus  
+  → Updates orderStatus  
+  → Clears error  
+  → Resets retry count  
 
-  ## Response (Success)
+  ---------------------------------------------
 
-  {
-  "success": true,
-  "message": "Shipment retried successfully",
-  "shipment": {
-  "trackingNumber": "RSASB1148381",
-  "deliveryStatus": "pending"
-  }
-  }
-
-  ## Response (Fallback - Redstar delay)
+  ## RESPONSE
 
   {
-  "success": true,
-  "message": "Tracking not available yet. Try again later.",
-  "shipment": {
-  "status": "pending"
-  }
+    "success": true,
+    "message": "Shipment retried successfully",
+    "order": { ... }
   }
 
-  ## Notes for Frontend
+  ---------------------------------------------
 
-  * Disable retry button while loading
-  * Show retry count
-  * Show error message if exists
+  ## ⚠️ REDSTAR DELAY CASE
+
+  {
+    "success": true,
+    "message": "Tracking not available yet",
+    "shipment": {
+      "status": "pending"
+    }
+  }
