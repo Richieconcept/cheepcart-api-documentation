@@ -1,0 +1,77 @@
+info:
+  name: RETRY SHIPMENT
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/shipments/retry/69e0cd3fb5080e7ae3a594e6"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |
+  # Retry Shipment Tracking
+
+  ## Method
+
+  POST
+
+  ## URL
+
+  /api/shipment/retry/:orderId
+
+  ## Auth
+
+  Bearer Token (Admin only)
+
+  ## Description
+
+  Retries fetching shipment status from Redstar when tracking fails.
+
+  ## When to Call (Frontend)
+
+  * Admin clicks "Retry"
+  * When shipment has error or retry count > 0
+
+  ## Params
+
+  orderId (URL param)
+
+  ## Example Request
+
+  POST /api/shipment/retry/69e0b39e4be2b573dcc7274a
+
+  ## Response (Success)
+
+  {
+  "success": true,
+  "message": "Shipment retried successfully",
+  "shipment": {
+  "trackingNumber": "RSASB1148381",
+  "deliveryStatus": "pending"
+  }
+  }
+
+  ## Response (Fallback - Redstar delay)
+
+  {
+  "success": true,
+  "message": "Tracking not available yet. Try again later.",
+  "shipment": {
+  "status": "pending"
+  }
+  }
+
+  ## Notes for Frontend
+
+  * Disable retry button while loading
+  * Show retry count
+  * Show error message if exists

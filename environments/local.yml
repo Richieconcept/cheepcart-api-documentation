@@ -1,6 +1,6 @@
 name: local
 variables:
   - name: baseUrl
-    value: https://cheepcart-project.onrender.com
+    value: http://localhost:5000
   - name: token
-    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OGM4NzQyOGNkZjc3ZjQwOGJhZGJiMyIsImlhdCI6MTc3NDUzNDYyMiwiZXhwIjoxNzc1MTM5NDIyfQ.PkKipTQNEKYci55ppWZk2qVPZ1e3WJOSAhudhAMYkXY
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OGM4NzQyOGNkZjc3ZjQwOGJhZGJiMyIsImlhdCI6MTc3NjI1OTYzNiwiZXhwIjoxNzc2ODY0NDM2fQ.5CqkVbH4sRlu2NWzLbl6wQlVCC6ra2jFBhyIQzdU4EY

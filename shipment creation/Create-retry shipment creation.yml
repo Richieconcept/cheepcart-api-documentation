@@ -1,0 +1,67 @@
+info:
+  name: Create/retry shipment creation
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/shipments/create/69e355eb827eaadacc96e7ca"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  docs {
+    # Create or Retry Shipment
+    
+    #### Shipment is created automatically after successful payment but in some cases where shipment creation fails use this api to retry or get shipment details if created already
+
+    This endpoint is used to:
+
+    1. Create a shipment after successful payment
+    2. Retry shipment creation if it previously failed
+    3. Retrieve existing shipment if already created
+
+    ## When to Use
+
+    ✅ After payment verification (auto-trigger)
+    ✅ When shipmentStatus = "failed" (manual retry)
+    ✅ When you need to fetch tracking details
+
+    ## Behavior
+
+    - If shipmentStatus = "not_created" → creates shipment
+    - If shipmentStatus = "failed" → retries shipment
+    - If shipmentStatus = "created" → returns existing shipment
+
+    ## Important
+
+    This endpoint is **idempotent**:
+    - Safe to call multiple times
+    - Will NOT create duplicate shipments
+
+  }
+
+
+  ## Response:
+  ```json
+  {
+    "success": true,
+    "alreadyExists": true,
+    "message": "Shipment already created",
+    "shipment": {
+      "orderId": "69e355eb827eaadacc96e7ca",
+      "orderNumber": "CHP-20260418-0001",
+      "shipmentStatus": "created",
+      "trackingNumber": "RSASB1186443",
+      "shipmentReference": "CHP-20260418-0001",
+      "createdAt": "2026-04-18T10:00:33.756Z"
+    }
+  }

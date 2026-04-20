@@ -18,30 +18,18 @@ http:
           "fullName": "Test User",
           "phone": "08012345678",
           "email": "test@gmail.com",
-          "addressLine1": "No 1 Abuja Street",
-          "state": "FCT",
-          "city": "Abuja",
-          "town": "Wuse",
-          "postalCode": "900001",
+          "addressLine1": "No 12 Okpanam Road, Near Asaba Mall",
+          "addressLine2": "",
+          "state": "DELTA",
+          "city": "ASABA",
+          "town": "OKPANAM",
+          "postalCode": "320001",
           "country": "Nigeria",
-          "redstarCityAbbr": "ABV",
-          "redstarTownId": 3868
+          "redstarCityAbbr": "ASB",
+          "redstarTownId": 4000
         },
-        "shippingAddress": {
-          "fullName": "Test User",
-          "phone": "08012345678",
-          "email": "test@gmail.com",
-          "addressLine1": "No 1 Abuja Street",
-          "state": "FCT",
-          "city": "Abuja",
-          "town": "Wuse",
-          "postalCode": "900001",
-          "country": "Nigeria",
-          "redstarCityAbbr": "ABV",
-          "redstarTownId": 3868
-        },
-        "recipientCity": "ABUJA",
-        "recipientTownID": 3868
+        "recipientCity": "ASABA",
+        "recipientTownID": 4000
       }
   auth: inherit
 

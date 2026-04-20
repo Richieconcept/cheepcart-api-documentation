@@ -1,0 +1,84 @@
+info:
+  name: Track shipment
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/shipments/track/RSASB1186443"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |
+  # Track Shipment
+
+  ## Method
+
+  GET
+
+  ## URL
+
+  /api/shipment/track/:trackingNumber
+
+  ## Auth
+
+  Bearer Token (User)
+
+  ## Description
+
+  Fetches real-time shipment tracking details from Redstar.
+
+  ## When to Call (Frontend)
+
+  * Order details page
+  * Tracking page
+  * Refresh every few seconds/minutes (optional)
+
+  ## Params
+
+  trackingNumber (URL param)
+
+  ## Example Request
+
+  GET /api/shipment/track/RSASB1148381
+
+  ## Response (Success)
+
+  {
+  "success": true,
+  "shipment": {
+  "trackingNumber": "RSASB1148381",
+  "status": "pending",
+  "statusCode": 0,
+  "timeline": [
+  {
+  "name": "Registered",
+  "completed": true
+  }
+  ]
+  }
+  }
+
+  ## Response (Fallback)
+
+  {
+  "success": true,
+  "shipment": {
+  "status": "pending",
+  "message": "Tracking not available yet"
+  }
+  }
+
+  ## Notes for Frontend
+
+  * Use "status" for UI (not statusCode)
+  * Display timeline as progress bar
+  * Do not crash if timeline is empty
