@@ -1,0 +1,83 @@
+info:
+  name: "Create Side-Bar  "
+  type: http
+  seq: 8
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/side-banners"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+  body:
+    type: multipart-form
+    data:
+      - name: media
+        type: file
+        value:
+          - C:\Users\Hi\Downloads\616765871_122157963806840934_3423340267822403840_n.jpg
+      - name: media
+        type: file
+        value:
+          - C:\Users\Hi\Downloads\ChatGPT Image Apr 24, 2026, 02_09_27 PM.png
+      - name: title
+        type: text
+        value: Side Promo
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  ## Call this endpoint to create a side banner  for preorder 
+
+  #### auth
+  `Authorization: Bearer {{adminToken}}`
+
+  ### request body
+  ```json
+  Multipart Form
+  media      = [file 1]
+  media      = [file 2]
+  media      = [file 3]
+  media      = [file 4]
+  media      = [file 5]
+  title      = Promo Banner
+  subtitle   = Big sale
+  link       = /shop
+  order      = 1
+  ```
+
+
+  ### Example response
+  ```json
+  {
+    "success": true,
+    "banner": {
+      "_id": "69ebd2ac3efb90f3bd2a1794",
+      "type": "secondary",
+      "order": 1,
+      "isActive": true,
+      "mediaItems": [
+        {
+          "secure_url": "https://res.cloudinary.com/dpqb1hpmc/image/upload/v1777062740/cheepcart/banners/qcndbfokklneppzzhca6.jpg",
+          "public_id": "cheepcart/banners/qcndbfokklneppzzhca6",
+          "mediaType": "image",
+          "resource_type": "image"
+        },
+        {
+          "secure_url": "https://res.cloudinary.com/dpqb1hpmc/image/upload/v1777062743/cheepcart/banners/swdqttues484un7v5wf8.png",
+          "public_id": "cheepcart/banners/swdqttues484un7v5wf8",
+          "mediaType": "image",
+          "resource_type": "image"
+        }
+      ],
+      "title": "Side Promo",
+      "createdAt": "2026-04-24T20:29:32.629Z",
+      "updatedAt": "2026-04-24T20:32:25.294Z",
+      "__v": 1
+    }
+  }

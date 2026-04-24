@@ -1,0 +1,142 @@
+info:
+  name: Create Banner
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseurl}}/api/banners"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+  body:
+    type: multipart-form
+    data:
+      - name: media
+        type: file
+        value:
+          - C:\Users\Hi\Downloads\ChatGPT Image Apr 23, 2026, 03_11_36 PM.png
+      - name: media
+        type: file
+        value:
+          - C:\Users\Hi\Downloads\ChatGPT Image Apr 23, 2026, 03_03_02 PM.png
+      - name: type
+        type: text
+        value: hero
+      - name: "subtitle "
+        type: text
+        value: Big sale
+      - name: link
+        type: text
+        value: /shop
+      - name: "order "
+        type: text
+        value: "1"
+      - name: media
+        type: file
+        value:
+          - C:\Users\Hi\Downloads\ChatGPT Image Apr 23, 2026, 04_40_45 PM.png
+      - name: media
+        type: file
+        value:
+          - C:\Users\Hi\Downloads\ChatGPT Image Apr 23, 2026, 03_12_07 PM.png
+      - name: media
+        type: file
+        value:
+          - C:\Users\Hi\Downloads\ChatGPT Image Apr 23, 2026, 10_17_58 AM.png
+  auth: inherit
+
+runtime:
+  variables:
+    - name: baseurl
+      value: http://localhost:5000
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  POST /api/banners
+
+  ## Description:
+  Create a new banner and upload media files to Cloudinary.  
+  Supports images, videos, and SVG files. A banner can contain up to 5 media items.
+
+  ## Authentication:
+  - **Bearer Token** required (Admin only)
+
+  ### Body Type:
+  - **Multipart Form**
+
+  ## Form Data:
+  type       = hero
+  title      = Promo Banner
+  subtitle   = Big sale
+  link       = /shop
+  order      = 1
+  media      = [file]
+  media      = [file]
+
+  ## Field Details:
+
+  ### type
+  - Type: string
+  - Required: Yes
+  - Description:
+    Defines the banner category. Common values:
+    - hero
+    - secondary
+
+  ### media
+  - Type: file
+  - Required: Yes
+  - Description:
+    Media files to upload.
+    - Max: 5 files
+    - Allowed: image, video, svg
+    - Use the same key `media` for all files
+
+  ### title
+  - Type: string
+  - Required: No
+  - Description: Main banner title
+
+  ### subtitle
+  - Type: string
+  - Required: No
+  - Description: Supporting text
+
+  ### link
+  - Type: string
+  - Required: No
+  - Description: Redirect URL when banner is clicked
+
+  ### order
+  - Type: number
+  - Required: No
+  - Description: Controls display order (lower appears first)
+
+  ## Example Response:
+  ```json
+  {
+    "success": true,
+    "banner": {
+      "_id": "69eb87c849ff28ea647c4509",
+      "type": "hero",
+      "mediaItems": [
+        {
+          "secure_url": "https://res.cloudinary.com/xxx/image/upload/file.png",
+          "public_id": "cheepcart/banners/file",
+          "mediaType": "image",
+          "resource_type": "image"
+        }
+      ],
+      "title": "Promo Banner",
+      "subtitle": "Big sale",
+      "link": "/shop",
+      "order": 1,
+      "isActive": true
+    }
+  }

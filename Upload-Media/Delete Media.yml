@@ -1,0 +1,40 @@
+info:
+  name: Delete Media
+  type: http
+  seq: 7
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/api/banners/69eb7df8d1a99161ce5b6ca3"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  DELETE /api/upload/delete
+
+  ## Description:
+  Delete one or more media files from Cloudinary using their public_ids.  
+  This ensures removed files do not remain in storage and helps keep your database in sync.
+
+  ## Authentication:
+  - **Bearer Token** required (Admin only)
+
+  ### Body Type:
+  - **Raw JSON**
+
+  ## Request Body:
+  ```json
+  {
+    "public_ids": [
+      "cheepcart/products/new_abc123",
+      "cheepcart/products/new_xyz456"
+    ]
+  }
