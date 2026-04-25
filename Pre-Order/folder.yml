@@ -1,0 +1,81 @@
+info:
+  name: Pre-Order
+  type: folder
+  seq: 8
+
+request:
+  auth: inherit
+
+docs:
+  content: |-
+    # CheepCart Pre-Order API
+
+    ## What this feature is for
+
+    The pre-order feature is for products the admin wants to show on the website before normal checkout is available.
+
+    Example use case:
+    - Admin lists products available for China pre-order.
+    - Frontend displays those products on one pre-order page.
+    - Customer clicks a product.
+    - Customer fills an enquiry form.
+    - No payment is collected immediately.
+    - Admin sees the enquiry in the dashboard and follows up with the customer.
+
+    ## Important frontend note
+
+    Pre-order products are not the same as normal products.
+
+    Do not add them to cart.
+    Do not send them to checkout.
+    Do not initialize Paystack payment for them.
+
+    The customer should only submit an enquiry form.
+
+    ## Frontend page flow
+
+    1. Call `GET /api/pre-order-products`.
+    2. Display the returned `products` array.
+    3. When a user clicks a product, open a detail page or modal.
+    4. Use the product `_id` as `productId` when submitting the enquiry.
+    5. Call `POST /api/pre-order-enquiries`.
+    6. Show a success message after submission.
+
+    ## Admin dashboard flow
+
+    1. Admin creates pre-order products from the dashboard.
+    2. Frontend users submit enquiries for those products.
+    3. Admin views enquiries under the pre-order section.
+    4. Admin updates enquiry status as they contact the customer.
+
+    ## Product status values
+
+    A pre-order product can have one of these statuses:
+
+    - `available` - product can receive enquiries.
+    - `coming_soon` - product is visible and can still receive enquiries.
+    - `closed` - product is visible but enquiry submission is blocked.
+
+    ## Enquiry status values
+
+    An enquiry can have one of these statuses:
+
+    - `pending`
+    - `contacted`
+    - `confirmed`
+    - `cancelled`
+    - `completed`
+
+    ## Image format
+
+    A pre-order product image uses the same Cloudinary style object used in the backend:
+
+    ```json
+    {
+      "secure_url": "https://res.cloudinary.com/your-cloud/image/upload/sample.jpg",
+      "public_id": "cheepcart/preorders/sample"
+    }
+    ```
+
+    Usually, frontend should upload the image first using the existing upload API, then use the returned `secure_url` and `public_id` when creating the pre-order product.
+  type: text/markdown

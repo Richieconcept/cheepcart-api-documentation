@@ -1,0 +1,96 @@
+info:
+  name: 11 Update Pre-Order Enquiry Status Admin
+  type: http
+  seq: 11
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/api/pre-order-enquiries/662b83004f9c2e2d7c222222/status"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+  body:
+    type: json
+    data: |-
+      {
+        "status": "contacted"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Update Pre-Order Enquiry Status
+
+  ## Endpoint
+  `PATCH /api/pre-order-enquiries/:id/status`
+
+  ## Who uses this?
+  Admin dashboard.
+
+  ## Authentication
+  Required. Admin only.
+
+  ## What it does
+  Updates the status of a customer's enquiry.
+
+  Use this after admin contacts the customer or completes the pre-order process.
+
+  ## URL parameter
+
+  `id`
+  - Type: string
+  - Required: yes
+  - This is the enquiry `_id`.
+
+  ## Request body
+
+  ```json
+  {
+    "status": "contacted"
+  }
+  ```
+
+  ## Allowed status values
+
+  - `pending`
+  - `contacted`
+  - `confirmed`
+  - `cancelled`
+  - `completed`
+
+  ## Sample success response
+
+  ```json
+  {
+    "message": "Pre-order enquiry status updated successfully",
+    "enquiry": {
+      "_id": "662b83004f9c2e2d7c222222",
+      "status": "contacted",
+      "fullName": "Jane Doe",
+      "phone": "08012345678"
+    }
+  }
+  ```
+
+  ## Common errors
+
+  Invalid status:
+
+  ```json
+  {
+    "message": "Invalid enquiry status"
+  }
+  ```
+
+  Enquiry not found:
+
+  ```json
+  {
+    "message": "Pre-order enquiry not found"
+  }
+  ```

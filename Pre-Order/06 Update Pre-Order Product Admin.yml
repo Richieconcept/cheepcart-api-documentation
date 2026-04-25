@@ -1,0 +1,100 @@
+info:
+  name: 06 Update Pre-Order Product Admin
+  type: http
+  seq: 6
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/api/pre-order-products/662b7f8f4f9c2e2d7c111111"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Luxury Travel Bag Updated",
+        "price": 48000,
+        "status": "available",
+        "displayOrder": 2
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Update Pre-Order Product
+
+  ## Endpoint
+  `PUT /api/pre-order-products/:id`
+
+  ## Who uses this?
+  Admin dashboard.
+
+  ## Authentication
+  Required. Admin only.
+
+  ## What it does
+  Updates an existing pre-order product.
+
+  You only need to send the fields you want to change.
+
+  ## URL parameter
+
+  `id`
+  - Type: string
+  - Required: yes
+  - This is the product `_id`.
+
+  ## Example request body
+
+  ```json
+  {
+    "name": "Luxury Travel Bag Updated",
+    "price": 48000,
+    "status": "available",
+    "displayOrder": 2
+  }
+  ```
+
+  ## Other fields you can update
+
+  ```json
+  {
+    "description": "New description",
+    "image": {
+      "secure_url": "https://res.cloudinary.com/demo/image/upload/new-bag.jpg",
+      "public_id": "cheepcart/preorders/new-bag"
+    },
+    "isActive": true
+  }
+  ```
+
+  ## Sample success response
+
+  ```json
+  {
+    "message": "Pre-order product updated successfully",
+    "product": {
+      "_id": "662b7f8f4f9c2e2d7c111111",
+      "name": "Luxury Travel Bag Updated",
+      "slug": "luxury-travel-bag-updated",
+      "price": 48000,
+      "status": "available",
+      "displayOrder": 2,
+      "isActive": true
+    }
+  }
+  ```
+
+  ## Error response
+
+  ```json
+  {
+    "message": "Pre-order product not found"
+  }
+  ```

@@ -1,0 +1,76 @@
+info:
+  name: 02 Get Single Pre-Order Product
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/pre-order-products/luxury-travel-bag"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Get Single Pre-Order Product
+
+  ## Endpoint
+  `GET /api/pre-order-products/:slug`
+
+  ## Who uses this?
+  Frontend website.
+
+  ## Authentication
+  Not required.
+
+  ## What it does
+  Returns one active pre-order product using the product `slug`.
+
+  Use this for a pre-order detail page or modal if you do not already have the full product object.
+
+  ## URL parameter
+
+  `slug`
+  - Type: string
+  - Required: yes
+  - Example: `luxury-travel-bag`
+
+  ## Example request
+
+  ```txt
+  GET /api/pre-order-products/luxury-travel-bag
+  ```
+
+  ## Sample success response
+
+  ```json
+  {
+    "_id": "662b7f8f4f9c2e2d7c111111",
+    "name": "Luxury Travel Bag",
+    "slug": "luxury-travel-bag",
+    "description": "Available for China pre-order.",
+    "price": 45000,
+    "image": {
+      "secure_url": "https://res.cloudinary.com/demo/image/upload/bag.jpg",
+      "public_id": "cheepcart/preorders/bag"
+    },
+    "status": "available",
+    "displayOrder": 1,
+    "isActive": true,
+    "createdAt": "2026-04-25T12:00:00.000Z",
+    "updatedAt": "2026-04-25T12:00:00.000Z"
+  }
+  ```
+
+  ## Error response
+
+  Product not found:
+
+  ```json
+  {
+    "message": "Pre-order product not found"
+  }
+  ```

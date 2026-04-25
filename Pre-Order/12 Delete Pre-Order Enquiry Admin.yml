@@ -1,0 +1,58 @@
+info:
+  name: 12 Delete Pre-Order Enquiry Admin
+  type: http
+  seq: 12
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/api/pre-order-enquiries/662b83004f9c2e2d7c222222"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Delete Pre-Order Enquiry
+
+  ## Endpoint
+  `DELETE /api/pre-order-enquiries/:id`
+
+  ## Who uses this?
+  Admin dashboard.
+
+  ## Authentication
+  Required. Admin only.
+
+  ## What it does
+  Permanently deletes a pre-order enquiry.
+
+  Use this carefully. Usually, it is better to update the status to `cancelled` or `completed` instead of deleting, so the admin still has history.
+
+  ## URL parameter
+
+  `id`
+  - Type: string
+  - Required: yes
+  - This is the enquiry `_id`.
+
+  ## Sample success response
+
+  ```json
+  {
+    "message": "Pre-order enquiry deleted successfully"
+  }
+  ```
+
+  ## Error response
+
+  ```json
+  {
+    "message": "Pre-order enquiry not found"
+  }
+  ```

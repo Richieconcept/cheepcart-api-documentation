@@ -1,0 +1,162 @@
+info:
+  name: 08 Submit Pre-Order Enquiry
+  type: http
+  seq: 8
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/pre-order-enquiries"
+  body:
+    type: json
+    data: |-
+      {
+        "productId": "662b7f8f4f9c2e2d7c111111",
+        "fullName": "Jane Doe",
+        "phone": "08012345678",
+        "email": "jane@example.com",
+        "quantity": 2,
+        "location": "Lagos, Nigeria",
+        "message": "Please contact me about delivery time."
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Submit Pre-Order Enquiry
+
+  ## Endpoint
+  `POST /api/pre-order-enquiries`
+
+  ## Who uses this?
+  Frontend website.
+
+  ## Authentication
+  Not required.
+
+  ## What it does
+  Saves the customer's interest in a pre-order product.
+
+  This endpoint does not create an order.
+  This endpoint does not collect payment.
+  This endpoint only sends the enquiry to the admin dashboard.
+
+  ## When to call this
+  Call this after the user fills the pre-order enquiry form.
+
+  ## Request body
+
+  ```json
+  {
+    "productId": "662b7f8f4f9c2e2d7c111111",
+    "fullName": "Jane Doe",
+    "phone": "08012345678",
+    "email": "jane@example.com",
+    "quantity": 2,
+    "location": "Lagos, Nigeria",
+    "message": "Please contact me about delivery time."
+  }
+  ```
+
+  ## Field descriptions
+
+  `productId`
+  - Type: string
+  - Required: yes
+  - Use the `_id` of the pre-order product.
+
+  `fullName`
+  - Type: string
+  - Required: yes
+  - Customer's full name.
+
+  `phone`
+  - Type: string
+  - Required: yes
+  - Customer's phone number.
+
+  `email`
+  - Type: string
+  - Required: no
+  - Customer's email address.
+
+  `quantity`
+  - Type: number
+  - Required: no
+  - Default: `1`
+
+  `location`
+  - Type: string
+  - Required: no
+  - Customer delivery/location information.
+
+  `message`
+  - Type: string
+  - Required: no
+  - Any extra note from the customer.
+
+  ## Sample success response
+
+  ```json
+  {
+    "message": "Pre-order enquiry submitted successfully",
+    "enquiry": {
+      "_id": "662b83004f9c2e2d7c222222",
+      "product": "662b7f8f4f9c2e2d7c111111",
+      "productSnapshot": {
+        "name": "Luxury Travel Bag",
+        "slug": "luxury-travel-bag",
+        "price": 45000,
+        "image": {
+          "secure_url": "https://res.cloudinary.com/demo/image/upload/bag.jpg",
+          "public_id": "cheepcart/preorders/bag"
+        }
+      },
+      "fullName": "Jane Doe",
+      "phone": "08012345678",
+      "email": "jane@example.com",
+      "quantity": 2,
+      "location": "Lagos, Nigeria",
+      "message": "Please contact me about delivery time.",
+      "status": "pending",
+      "createdAt": "2026-04-25T12:20:00.000Z",
+      "updatedAt": "2026-04-25T12:20:00.000Z"
+    }
+  }
+  ```
+
+  ## Frontend success message idea
+
+  Show something like:
+
+  `Your pre-order enquiry has been submitted. Our team will contact you shortly.`
+
+  ## Common errors
+
+  Missing required fields:
+
+  ```json
+  {
+    "message": "Product, full name and phone number are required"
+  }
+  ```
+
+  Product not found:
+
+  ```json
+  {
+    "message": "Pre-order product not found"
+  }
+  ```
+
+  Product closed:
+
+  ```json
+  {
+    "message": "This pre-order product is currently closed"
+  }
+  ```

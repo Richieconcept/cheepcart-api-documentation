@@ -1,0 +1,94 @@
+info:
+  name: 01 Get Pre-Order Products
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/pre-order-products"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Get Pre-Order Products
+
+  ## Endpoint
+  `GET /api/pre-order-products`
+
+  ## Who uses this?
+  Frontend website.
+
+  ## Authentication
+  Not required.
+
+  ## What it does
+  Returns active pre-order products for the public pre-order page.
+
+  The frontend should map over the `products` array and show each product image, name, optional price, and status.
+
+  ## Optional query parameters
+
+  `page`
+  - Type: number
+  - Default: `1`
+  - Use this when paginating products.
+
+  `limit`
+  - Type: number
+  - Default: `10`
+  - Controls how many products return per page.
+
+  `status`
+  - Type: string
+  - Optional values: `available`, `coming_soon`, `closed`
+  - Use this if frontend wants only products with one status.
+
+  `keyword`
+  - Type: string
+  - Searches product name and description.
+
+  ## Example requests
+
+  ```txt
+  GET /api/pre-order-products
+  GET /api/pre-order-products?page=1&limit=12
+  GET /api/pre-order-products?status=available
+  GET /api/pre-order-products?keyword=bag
+  ```
+
+  ## Sample success response
+
+  ```json
+  {
+    "total": 2,
+    "page": 1,
+    "pages": 1,
+    "products": [
+      {
+        "_id": "662b7f8f4f9c2e2d7c111111",
+        "name": "Luxury Travel Bag",
+        "slug": "luxury-travel-bag",
+        "description": "Available for China pre-order.",
+        "price": 45000,
+        "image": {
+          "secure_url": "https://res.cloudinary.com/demo/image/upload/bag.jpg",
+          "public_id": "cheepcart/preorders/bag"
+        },
+        "status": "available",
+        "displayOrder": 1,
+        "isActive": true,
+        "createdAt": "2026-04-25T12:00:00.000Z",
+        "updatedAt": "2026-04-25T12:00:00.000Z"
+      }
+    ]
+  }
+  ```
+
+  ## Frontend usage tip
+
+  If `price` is missing or null, show `Contact for price` or hide the price.

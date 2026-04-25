@@ -1,0 +1,148 @@
+info:
+  name: 03 Create Pre-Order Product Admin
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/pre-order-products"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Luxury Travel Bag",
+        "description": "Available for China pre-order.",
+        "price": 45000,
+        "image": {
+          "secure_url": "https://res.cloudinary.com/demo/image/upload/bag.jpg",
+          "public_id": "cheepcart/preorders/bag"
+        },
+        "status": "available",
+        "displayOrder": 1
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Create Pre-Order Product
+
+  ## Endpoint
+  `POST /api/pre-order-products`
+
+  ## Who uses this?
+  Admin dashboard.
+
+  ## Authentication
+  Required. Admin only.
+
+  ## What it does
+  Creates a product that will appear on the frontend pre-order page.
+
+  This does not create a normal store product. It does not require category, stock, weight, or checkout data.
+
+  ## Headers
+
+  ```json
+  {
+    "Authorization": "Bearer <ADMIN_TOKEN>",
+    "Content-Type": "application/json"
+  }
+  ```
+
+  ## Request body
+
+  ```json
+  {
+    "name": "Luxury Travel Bag",
+    "description": "Available for China pre-order.",
+    "price": 45000,
+    "image": {
+      "secure_url": "https://res.cloudinary.com/demo/image/upload/bag.jpg",
+      "public_id": "cheepcart/preorders/bag"
+    },
+    "status": "available",
+    "displayOrder": 1
+  }
+  ```
+
+  ## Field descriptions
+
+  `name`
+  - Type: string
+  - Required: yes
+  - Product name shown on frontend.
+
+  `description`
+  - Type: string
+  - Required: no
+  - Extra information about the pre-order product.
+
+  `price`
+  - Type: number
+  - Required: no
+  - Use only when admin knows the price.
+  - If price is not known, do not send it.
+
+  `image`
+  - Type: object
+  - Required: yes
+  - Must contain `secure_url` and `public_id`.
+
+  `status`
+  - Type: string
+  - Required: no
+  - Default: `available`
+  - Options: `available`, `coming_soon`, `closed`
+
+  `displayOrder`
+  - Type: number
+  - Required: no
+  - Lower numbers appear first.
+
+  ## Sample success response
+
+  ```json
+  {
+    "message": "Pre-order product created successfully",
+    "product": {
+      "_id": "662b7f8f4f9c2e2d7c111111",
+      "name": "Luxury Travel Bag",
+      "slug": "luxury-travel-bag",
+      "description": "Available for China pre-order.",
+      "price": 45000,
+      "image": {
+        "secure_url": "https://res.cloudinary.com/demo/image/upload/bag.jpg",
+        "public_id": "cheepcart/preorders/bag"
+      },
+      "status": "available",
+      "displayOrder": 1,
+      "isActive": true
+    }
+  }
+  ```
+
+  ## Common errors
+
+  Missing name:
+
+  ```json
+  {
+    "message": "Product name is required"
+  }
+  ```
+
+  Missing image:
+
+  ```json
+  {
+    "message": "Product image with secure_url and public_id is required"
+  }
+  ```

@@ -1,0 +1,69 @@
+info:
+  name: 04 Get All Pre-Order Products Admin
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/pre-order-products/admin/all"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Get All Pre-Order Products For Admin
+
+  ## Endpoint
+  `GET /api/pre-order-products/admin/all`
+
+  ## Who uses this?
+  Admin dashboard.
+
+  ## Authentication
+  Required. Admin only.
+
+  ## What it does
+  Returns all pre-order products, including inactive products.
+
+  Use this endpoint for the admin pre-order product table.
+
+  ## Headers
+
+  ```json
+  {
+    "Authorization": "Bearer <ADMIN_TOKEN>"
+  }
+  ```
+
+  ## Sample success response
+
+  ```json
+  {
+    "total": 2,
+    "products": [
+      {
+        "_id": "662b7f8f4f9c2e2d7c111111",
+        "name": "Luxury Travel Bag",
+        "slug": "luxury-travel-bag",
+        "description": "Available for China pre-order.",
+        "price": 45000,
+        "image": {
+          "secure_url": "https://res.cloudinary.com/demo/image/upload/bag.jpg",
+          "public_id": "cheepcart/preorders/bag"
+        },
+        "status": "available",
+        "displayOrder": 1,
+        "isActive": true,
+        "createdAt": "2026-04-25T12:00:00.000Z",
+        "updatedAt": "2026-04-25T12:00:00.000Z"
+      }
+    ]
+  }
+  ```

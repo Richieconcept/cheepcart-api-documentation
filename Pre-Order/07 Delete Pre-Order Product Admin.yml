@@ -1,0 +1,60 @@
+info:
+  name: 07 Delete Pre-Order Product Admin
+  type: http
+  seq: 7
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/api/pre-order-products/662b7f8f4f9c2e2d7c111111"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Delete Pre-Order Product
+
+  ## Endpoint
+  `DELETE /api/pre-order-products/:id`
+
+  ## Who uses this?
+  Admin dashboard.
+
+  ## Authentication
+  Required. Admin only.
+
+  ## What it does
+  Removes a pre-order product from the public frontend list.
+
+  Important: this is a soft delete. The backend sets `isActive` to `false` instead of permanently deleting the product.
+
+  This is safer because old enquiries can still keep their product history.
+
+  ## URL parameter
+
+  `id`
+  - Type: string
+  - Required: yes
+  - This is the product `_id`.
+
+  ## Sample success response
+
+  ```json
+  {
+    "message": "Pre-order product removed"
+  }
+  ```
+
+  ## Error response
+
+  ```json
+  {
+    "message": "Pre-order product not found"
+  }
+  ```

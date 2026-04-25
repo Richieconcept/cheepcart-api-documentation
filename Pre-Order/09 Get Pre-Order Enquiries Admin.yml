@@ -1,0 +1,99 @@
+info:
+  name: 09 Get Pre-Order Enquiries Admin
+  type: http
+  seq: 9
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/pre-order-enquiries"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Get Pre-Order Enquiries
+
+  ## Endpoint
+  `GET /api/pre-order-enquiries`
+
+  ## Who uses this?
+  Admin dashboard.
+
+  ## Authentication
+  Required. Admin only.
+
+  ## What it does
+  Returns customer enquiry submissions.
+
+  Use this for the admin pre-order enquiries table.
+
+  ## Optional query parameters
+
+  `page`
+  - Type: number
+  - Default: `1`
+
+  `limit`
+  - Type: number
+  - Default: `20`
+
+  `status`
+  - Type: string
+  - Options: `pending`, `contacted`, `confirmed`, `cancelled`, `completed`
+
+  `product`
+  - Type: string
+  - Filter by product `_id`.
+
+  ## Example requests
+
+  ```txt
+  GET /api/pre-order-enquiries
+  GET /api/pre-order-enquiries?status=pending
+  GET /api/pre-order-enquiries?page=1&limit=20
+  GET /api/pre-order-enquiries?product=662b7f8f4f9c2e2d7c111111
+  ```
+
+  ## Sample success response
+
+  ```json
+  {
+    "total": 1,
+    "page": 1,
+    "pages": 1,
+    "enquiries": [
+      {
+        "_id": "662b83004f9c2e2d7c222222",
+        "product": {
+          "_id": "662b7f8f4f9c2e2d7c111111",
+          "name": "Luxury Travel Bag",
+          "slug": "luxury-travel-bag",
+          "price": 45000,
+          "status": "available",
+          "isActive": true
+        },
+        "productSnapshot": {
+          "name": "Luxury Travel Bag",
+          "slug": "luxury-travel-bag",
+          "price": 45000
+        },
+        "fullName": "Jane Doe",
+        "phone": "08012345678",
+        "email": "jane@example.com",
+        "quantity": 2,
+        "location": "Lagos, Nigeria",
+        "message": "Please contact me about delivery time.",
+        "status": "pending",
+        "createdAt": "2026-04-25T12:20:00.000Z",
+        "updatedAt": "2026-04-25T12:20:00.000Z"
+      }
+    ]
+  }
+  ```
