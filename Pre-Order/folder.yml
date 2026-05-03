@@ -66,16 +66,29 @@ docs:
     - `cancelled`
     - `completed`
 
-    ## Image format
+    ## Admin image upload
 
-    A pre-order product image uses the same Cloudinary style object used in the backend:
+    For creating or updating a pre-order product from the admin dashboard, send the image file directly with `multipart/form-data`.
+
+    Use this exact file field name:
+
+    ```txt
+    image: [file]
+    ```
+
+    The backend uploads the image to Cloudinary and saves it on the product as:
 
     ```json
     {
       "secure_url": "https://res.cloudinary.com/your-cloud/image/upload/sample.jpg",
-      "public_id": "cheepcart/preorders/sample"
+      "public_id": "cheepcart/pre-order-products/sample"
     }
     ```
 
-    Usually, frontend should upload the image first using the existing upload API, then use the returned `secure_url` and `public_id` when creating the pre-order product.
+    Frontend should not send only an image URL string for create/update. The normal admin flow is:
+
+    1. Build a `FormData` object.
+    2. Append text fields like `name`, `description`, `price`, `status`, and `displayOrder`.
+    3. Append the selected image file with key `image`.
+    4. Send the request without manually setting `Content-Type`.
   type: text/markdown

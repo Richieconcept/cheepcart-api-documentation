@@ -55,7 +55,7 @@ docs: |-
     "price": 45000,
     "image": {
       "secure_url": "https://res.cloudinary.com/demo/image/upload/bag.jpg",
-      "public_id": "cheepcart/preorders/bag"
+      "public_id": "cheepcart/pre-order-products/bag"
     },
     "status": "available",
     "displayOrder": 1,

@@ -5,7 +5,7 @@ info:
 
 http:
   method: PATCH
-  url: "{{baseUrl}}/api/pre-order-enquiries/662b83004f9c2e2d7c222222/status"
+  url: "{{baseUrl}}/api/pre-order-enquiries/69ecb560354aed94116d5bd8/status"
   headers:
     - name: Authorization
       value: Bearer {{token}}

@@ -10,19 +10,26 @@ http:
     - name: Authorization
       value: Bearer {{token}}
   body:
-    type: json
-    data: |-
-      {
-        "name": "Luxury Travel Bag",
-        "description": "Available for China pre-order.",
-        "price": 45000,
-        "image": {
-          "secure_url": "https://res.cloudinary.com/demo/image/upload/bag.jpg",
-          "public_id": "cheepcart/preorders/bag"
-        },
-        "status": "available",
-        "displayOrder": 1
-      }
+    type: multipart-form
+    data:
+      - name: name
+        type: text
+        value: Luxury Travel Bag
+      - name: description
+        type: text
+        value: Available for China pre-order.
+      - name: price
+        type: text
+        value: "45000"
+      - name: status
+        type: text
+        value: available
+      - name: displayOrder
+        type: text
+        value: "1"
+      - name: image
+        type: file
+        value: []
   auth: inherit
 
 settings:
@@ -44,7 +51,7 @@ docs: |-
   Required. Admin only.
 
   ## What it does
-  Creates a product that will appear on the frontend pre-order page.
+  Creates a product that will appear on the frontend pre-order page and uploads the image to Cloudinary in the same request.
 
   This does not create a normal store product. It does not require category, stock, weight, or checkout data.
 
@@ -53,25 +60,25 @@ docs: |-
   ```json
   {
     "Authorization": "Bearer <ADMIN_TOKEN>",
-    "Content-Type": "application/json"
+    "Content-Type": "multipart/form-data"
   }
   ```
 
-  ## Request body
+  ## Body type
+  `multipart/form-data`
 
-  ```json
-  {
-    "name": "Luxury Travel Bag",
-    "description": "Available for China pre-order.",
-    "price": 45000,
-    "image": {
-      "secure_url": "https://res.cloudinary.com/demo/image/upload/bag.jpg",
-      "public_id": "cheepcart/preorders/bag"
-    },
-    "status": "available",
-    "displayOrder": 1
-  }
+  ## Form data
+
+  ```txt
+  name: Luxury Travel Bag
+  description: Available for China pre-order.
+  price: 45000
+  status: available
+  displayOrder: 1
+  image: [file]
   ```
+
+  Important: `image` is a file field, not a URL string. The backend uploads this file to Cloudinary, then saves the returned `secure_url` and `public_id`.
 
   ## Field descriptions
 
@@ -92,9 +99,12 @@ docs: |-
   - If price is not known, do not send it.
 
   `image`
-  - Type: object
+  - Type: file
   - Required: yes
-  - Must contain `secure_url` and `public_id`.
+  - Send one image file using the exact key `image`.
+  - Allowed file type: image.
+  - Max file size: 5MB.
+  - Backend stores the image in Cloudinary folder `cheepcart/pre-order-products`.
 
   `status`
   - Type: string
@@ -119,8 +129,8 @@ docs: |-
       "description": "Available for China pre-order.",
       "price": 45000,
       "image": {
-        "secure_url": "https://res.cloudinary.com/demo/image/upload/bag.jpg",
-        "public_id": "cheepcart/preorders/bag"
+        "secure_url": "https://res.cloudinary.com/demo/image/upload/v1234567890/cheepcart/pre-order-products/bag.jpg",
+        "public_id": "cheepcart/pre-order-products/bag"
       },
       "status": "available",
       "displayOrder": 1,
@@ -146,3 +156,25 @@ docs: |-
     "message": "Product image with secure_url and public_id is required"
   }
   ```
+
+  ## Frontend example
+
+  ```js
+  const formData = new FormData();
+  formData.append("name", name);
+  formData.append("description", description);
+  formData.append("price", price);
+  formData.append("status", status);
+  formData.append("displayOrder", displayOrder);
+  formData.append("image", imageFile);
+
+  await fetch(`${baseUrl}/api/pre-order-products`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${adminToken}`
+    },
+    body: formData
+  });
+  ```
+
+  Do not manually set `Content-Type` in frontend when using `FormData`; the browser will add the multipart boundary automatically.

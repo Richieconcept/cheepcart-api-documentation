@@ -5,7 +5,7 @@ info:
 
 http:
   method: DELETE
-  url: "{{baseUrl}}/api/pre-order-products/662b7f8f4f9c2e2d7c111111"
+  url: "{{baseUrl}}/api/pre-order-products/69ecb429354aed94116d5bbf"
   headers:
     - name: Authorization
       value: Bearer {{token}}

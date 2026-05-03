@@ -10,7 +10,7 @@ http:
     type: json
     data: |-
       {
-        "productId": "662b7f8f4f9c2e2d7c111111",
+        "productId": "69ecb4e2354aed94116d5bd4",
         "fullName": "Jane Doe",
         "phone": "08012345678",
         "email": "jane@example.com",
@@ -113,7 +113,7 @@ docs: |-
         "price": 45000,
         "image": {
           "secure_url": "https://res.cloudinary.com/demo/image/upload/bag.jpg",
-          "public_id": "cheepcart/preorders/bag"
+          "public_id": "cheepcart/pre-order-products/bag"
         }
       },
       "fullName": "Jane Doe",
