@@ -1,51 +1,110 @@
-docs: |
-  # 🔁 RETRY SHIPMENT TRACKING
+info:
+  name: Retry shipment tracking
+  type: http
+  seq: 4
 
-  ## Endpoint
-  POST /api/shipments/retry/:orderId
+http:
+  method: POST
+  url: "{{baseUrl}}/api/shipments/retry/:orderId"
+  params:
+    - name: orderId
+      value: 69e355eb827eaadacc96e7ca
+      type: path
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+  auth: inherit
 
-  ---------------------------------------------
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Retry Shipment Tracking
+
+  `POST /api/shipments/retry/:orderId`
 
   ## Description
 
-  Forces immediate tracking update for a shipment.
+  Forces an immediate Redstar tracking refresh for one order.
 
-  ---------------------------------------------
+  Use this from the admin shipment monitor when a shipment has a tracking number but the automatic sync failed, retry count increased, or `shipmentError` is present.
 
-  ## WHEN TO USE
+  ## Authentication
 
-  ✅ Admin clicks retry  
-  ✅ shipmentRetryCount > 0  
-  ✅ shipmentError exists  
+  Bearer token required.
 
-  ---------------------------------------------
+  Admin only.
 
-  ## WHAT IT DOES
+  ## Path Parameters
 
-  → Calls Redstar API  
-  → Updates deliveryStatus  
-  → Updates orderStatus  
-  → Clears error  
-  → Resets retry count  
+  | Name | Type | Required | Description |
+  |------|------|----------|-------------|
+  | `orderId` | string | Yes | MongoDB `_id` of the order whose shipment tracking should be retried. |
 
-  ---------------------------------------------
+  ## What It Does Internally
 
-  ## RESPONSE
+  - Finds the order by `orderId`.
+  - Requires the order to already have a `trackingNumber`.
+  - Calls Redstar tracking API.
+  - Updates `deliveryStatus`, `orderStatus`, and `lastTrackedAt`.
+  - Resets `shipmentRetryCount` to `0`.
+  - Clears `shipmentError`.
+  - If delivered, sets `orderStatus` and `shipmentStatus` to `delivered`.
 
+  ## Example Request
+
+  ```http
+  POST /api/shipments/retry/69e355eb827eaadacc96e7ca
+  Authorization: Bearer <admin-token>
+  ```
+
+  ## Success Response
+
+  ```json
   {
     "success": true,
     "message": "Shipment retried successfully",
-    "order": { ... }
+    "order": {
+      "_id": "69e355eb827eaadacc96e7ca",
+      "orderNumber": "CHP-20260418-0001",
+      "shipmentStatus": "created",
+      "deliveryStatus": "in_transit",
+      "orderStatus": "shipped",
+      "trackingNumber": "RSASB1186443",
+      "shipmentRetryCount": 0,
+      "shipmentError": null,
+      "lastTrackedAt": "2026-05-05T12:00:00.000Z"
+    }
   }
+  ```
 
-  ---------------------------------------------
+  ## Tracking Not Available Yet
 
-  ## ⚠️ REDSTAR DELAY CASE
-
+  ```json
   {
     "success": true,
-    "message": "Tracking not available yet",
+    "message": "Tracking not available yet. Try again later.",
     "shipment": {
       "status": "pending"
     }
   }
+  ```
+
+  ## Shipment Not Found
+
+  ```json
+  {
+    "success": false,
+    "message": "Shipment not found"
+  }
+  ```
+
+  ## Frontend Notes
+
+  - Show this action only to admins.
+  - Useful button label: `Retry tracking`.
+  - Disable while request is running to avoid duplicate clicks.
+  - After success, refresh the shipment table row with the returned `order`.

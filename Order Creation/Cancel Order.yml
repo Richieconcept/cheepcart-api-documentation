@@ -6,6 +6,9 @@ info:
 http:
   method: DELETE
   url: "{{baseUrl}}/api/orders/:orderId/cancel"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
   params:
     - name: orderId
       value: ""

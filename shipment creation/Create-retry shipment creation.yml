@@ -1,11 +1,15 @@
 info:
-  name: Create/retry shipment creation
+  name: Create shipment admin
   type: http
   seq: 1
 
 http:
   method: POST
-  url: "{{baseUrl}}/api/shipments/create/69e355eb827eaadacc96e7ca"
+  url: "{{baseUrl}}/api/shipments/create/:orderId"
+  params:
+    - name: orderId
+      value: 69e355eb827eaadacc96e7ca
+      type: path
   headers:
     - name: Authorization
       value: Bearer {{token}}
@@ -18,39 +22,73 @@ settings:
   maxRedirects: 5
 
 docs: |-
-  docs {
-    # Create or Retry Shipment
-    
-    #### Shipment is created automatically after successful payment but in some cases where shipment creation fails use this api to retry or get shipment details if created already
+  # Create Shipment Admin
 
-    This endpoint is used to:
+  `POST /api/shipments/create/:orderId`
 
-    1. Create a shipment after successful payment
-    2. Retry shipment creation if it previously failed
-    3. Retrieve existing shipment if already created
+  ## Description
 
-    ## When to Use
+  Creates a Redstar shipment for a paid and confirmed order.
 
-    ✅ After payment verification (auto-trigger)
-    ✅ When shipmentStatus = "failed" (manual retry)
-    ✅ When you need to fetch tracking details
+  Shipment creation is also handled automatically after successful payment, but this endpoint is useful for admin manual creation or retrying shipment creation when the automatic flow failed.
 
-    ## Behavior
+  ## Authentication
 
-    - If shipmentStatus = "not_created" → creates shipment
-    - If shipmentStatus = "failed" → retries shipment
-    - If shipmentStatus = "created" → returns existing shipment
+  Bearer token required.
 
-    ## Important
+  Admin only.
 
-    This endpoint is **idempotent**:
-    - Safe to call multiple times
-    - Will NOT create duplicate shipments
+  ## Path Parameters
 
+  | Name | Type | Required | Description |
+  |------|------|----------|-------------|
+  | `orderId` | string | Yes | MongoDB `_id` of the order to create shipment for. |
+
+  ## Preconditions
+
+  The order must exist and must satisfy:
+
+  - `paymentStatus` is `paid`
+  - `orderStatus` is `confirmed`
+
+  ## What It Does Internally
+
+  - Loads the order.
+  - Builds a Redstar shipment payload from the order shipping address and order totals.
+  - Calls Redstar shipment creation API.
+  - Saves `shipmentStatus`, `deliveryStatus`, `shipmentReference`, `trackingNumber`, and `shipmentCreatedAt`.
+  - Moves the order to `processing` after successful shipment creation.
+
+  ## Duplicate Protection
+
+  If the order already has `shipmentStatus` set to `created`, the endpoint returns the existing shipment details instead of creating a duplicate shipment.
+
+  ## Example Request
+
+  ```http
+  POST /api/shipments/create/69e355eb827eaadacc96e7ca
+  Authorization: Bearer <admin-token>
+  ```
+
+  ## Successful Creation Response
+
+  ```json
+  {
+    "success": true,
+    "message": "Shipment created successfully",
+    "shipment": {
+      "orderId": "69e355eb827eaadacc96e7ca",
+      "orderNumber": "CHP-20260418-0001",
+      "shipmentStatus": "created",
+      "trackingNumber": "RSASB1186443",
+      "shipmentReference": "CHP-20260418-0001",
+      "createdAt": "2026-04-18T10:00:33.756Z"
+    }
   }
+  ```
 
+  ## Already Exists Response
 
-  ## Response:
   ```json
   {
     "success": true,
@@ -65,3 +103,49 @@ docs: |-
       "createdAt": "2026-04-18T10:00:33.756Z"
     }
   }
+  ```
+
+  ## Common Error Responses
+
+  Order not found:
+
+  ```json
+  {
+    "success": false,
+    "message": "Order not found"
+  }
+  ```
+
+  Order not paid:
+
+  ```json
+  {
+    "success": false,
+    "message": "Order not paid"
+  }
+  ```
+
+  Order not confirmed:
+
+  ```json
+  {
+    "success": false,
+    "message": "Order not confirmed"
+  }
+  ```
+
+  Provider failure:
+
+  ```json
+  {
+    "success": false,
+    "message": "Shipment failed at provider"
+  }
+  ```
+
+  ## Frontend Notes
+
+  - Use this endpoint from the admin order detail page.
+  - Do not show it to normal users.
+  - After success, display `trackingNumber` and allow admin/customer to track shipment.
+  - If `alreadyExists` is true, treat it as success and show the returned shipment details.

@@ -1,49 +1,141 @@
-docs: |
-  # 📍 TRACK SHIPMENT
+info:
+  name: Track shipment
+  type: http
+  seq: 2
 
-  ## Endpoint
-  GET /api/shipments/track/:trackingNumber
+http:
+  method: GET
+  url: "{{baseUrl}}/api/shipments/track/:trackingNumber"
+  params:
+    - name: trackingNumber
+      value: RSASB1186443
+      type: path
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+  auth: inherit
 
-  ---------------------------------------------
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Track Shipment
+
+  `GET /api/shipments/track/:trackingNumber`
 
   ## Description
 
-  Fetches real-time shipment tracking from Redstar.
+  Fetches live shipment tracking information from Redstar using the shipment tracking number.
 
-  Also updates order internally.
+  Use this endpoint on the customer order details page or on a public/authenticated tracking screen after an order has a `trackingNumber`.
 
-  ---------------------------------------------
+  ## Authentication
 
-  ## 🔥 WHAT IT DOES INTERNALLY
+  Bearer token required.
 
-  → Updates deliveryStatus  
-  → Updates orderStatus  
-  → Updates lastTrackedAt  
+  Any authenticated user can call this endpoint. It is not admin-only.
 
-  ---------------------------------------------
+  ## Path Parameters
 
-  ## RESPONSE
+  | Name | Type | Required | Description |
+  |------|------|----------|-------------|
+  | `trackingNumber` | string | Yes | Redstar waybill/tracking number saved on the order. Example: `RSASB1186443`. |
 
+  ## What It Does Internally
+
+  - Calls Redstar tracking API through `trackRedstarShipment`.
+  - Converts Redstar status code into app status with `mapToAppStatus`.
+  - Finds the order with the same `trackingNumber`.
+  - Updates `deliveryStatus`, `orderStatus`, and `lastTrackedAt`.
+  - If delivered, sets `orderStatus` and `shipmentStatus` to `delivered`.
+
+  ## App Status Values
+
+  Frontend should display the `shipment.status` field, not the raw `statusCode`.
+
+  Possible mapped values include:
+
+  - `pending`
+  - `created`
+  - `in_transit`
+  - `out_for_delivery`
+  - `delivered`
+  - `failed`
+
+  ## Example Request
+
+  ```http
+  GET /api/shipments/track/RSASB1186443
+  Authorization: Bearer <token>
+  ```
+
+  ## Success Response
+
+  ```json
   {
     "success": true,
     "shipment": {
-      "trackingNumber": "...",
-      "status": "pending | in_transit | delivered",
-      "orderStatus": "processing | shipped | delivered",
-      "timeline": [...]
+      "trackingNumber": "RSASB1186443",
+      "statusCode": 4,
+      "status": "in_transit",
+      "orderStatus": "shipped",
+      "sender": "CheepCart",
+      "recipient": "Test User",
+      "deliveryType": "Express Delivery",
+      "weight": 2,
+      "pricing": {
+        "deliveryFee": 8500,
+        "vat": 637.5,
+        "total": 9137.5
+      },
+      "timeline": [
+        {
+          "name": "Shipment Created",
+          "completed": true,
+          "date": "2026-04-18T10:00:33.756Z",
+          "location": "Asaba"
+        },
+        {
+          "name": "In Transit",
+          "completed": true,
+          "date": "2026-04-19T09:15:00.000Z",
+          "location": "Lagos"
+        }
+      ]
     }
   }
+  ```
 
-  ---------------------------------------------
+  ## Tracking Not Available Yet
 
-  ## FRONTEND USAGE
+  Redstar may return an error when a newly created waybill is not ready for tracking. In that case the API returns a safe pending response:
 
-  ✅ Order details page  
-  ✅ Tracking page  
+  ```json
+  {
+    "success": true,
+    "shipment": {
+      "trackingNumber": "RSASB1186443",
+      "status": "pending",
+      "message": "Tracking not available yet. Please try again later."
+    }
+  }
+  ```
 
-  ---------------------------------------------
+  ## Validation Error
 
-  ## ⚠️ NOTE
+  ```json
+  {
+    "success": false,
+    "message": "Tracking number is required"
+  }
+  ```
 
-  Do NOT rely on statusCode  
-  Always use "status"
+  ## Frontend Notes
+
+  - Use `shipment.status` for badges and progress state.
+  - Use `shipment.timeline` to render the tracking steps.
+  - If response is pending with a message, show a soft message and let the user retry later.
+  - Do not depend on `statusCode`; it is provider-specific.

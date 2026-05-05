@@ -1,5 +1,5 @@
 info:
-  name: GET ALL SHIPMENTS (ADMIN)
+  name: Get all shipments admin
   type: http
   seq: 3
 
@@ -17,57 +17,92 @@ settings:
   followRedirects: true
   maxRedirects: 5
 
-docs: |
-  # Get All Shipments
+docs: |-
+  # Get All Shipments Admin
 
-  ## Method
-
-  GET
-
-  ## URL
-
-  /api/shipment/get-all-shipments
-
-  ## Auth
-
-  Bearer Token (Admin only)
+  `GET /api/shipments/get-all-shipments`
 
   ## Description
 
-  Fetch all shipments in the system for monitoring.
+  Returns all orders that already have a shipment tracking number.
 
-  ## When to Call (Frontend)
+  Use this endpoint for the admin shipment monitor, shipment table, or dashboard widgets.
 
-  * Admin dashboard page
-  * Shipment management page
+  ## Authentication
+
+  Bearer token required.
+
+  Admin only.
+
+  ## Query Parameters
+
+  No query parameters are currently supported.
+
+  ## What The API Returns
+
+  Each shipment item is an order summary with:
+
+  - `orderNumber`
+  - `trackingNumber`
+  - `shipmentStatus`
+  - `deliveryStatus`
+  - `shipmentRetryCount`
+  - `shipmentError`
+  - `createdAt`
+
+  Results are sorted newest first.
 
   ## Example Request
 
-  GET /api/shipment/get-all-shipments
+  ```http
+  GET /api/shipments/get-all-shipments
+  Authorization: Bearer <admin-token>
+  ```
 
-  ## Response
+  ## Success Response
 
+  ```json
   {
-  "success": true,
-  "total": 2,
-  "shipments": [
+    "success": true,
+    "total": 2,
+    "shipments": [
+      {
+        "_id": "69e355eb827eaadacc96e7ca",
+        "orderNumber": "CHP-20260418-0001",
+        "trackingNumber": "RSASB1186443",
+        "shipmentStatus": "created",
+        "deliveryStatus": "in_transit",
+        "shipmentRetryCount": 0,
+        "shipmentError": null,
+        "createdAt": "2026-04-18T10:00:33.756Z"
+      },
+      {
+        "_id": "69e355eb827eaadacc96e7cb",
+        "orderNumber": "CHP-20260416-0001",
+        "trackingNumber": "RSASB1148381",
+        "shipmentStatus": "created",
+        "deliveryStatus": "pending",
+        "shipmentRetryCount": 1,
+        "shipmentError": "Tracking not available yet",
+        "createdAt": "2026-04-16T09:30:00.000Z"
+      }
+    ]
+  }
+  ```
+
+  ## Error Response
+
+  ```json
   {
-  "orderNumber": "CHP-20260416-0001",
-  "trackingNumber": "RSASB1148381",
-  "shipmentStatus": "created",
-  "deliveryStatus": "pending",
-  "shipmentRetryCount": 1,
-  "shipmentError": null
+    "success": false,
+    "message": "Failed to fetch shipments"
   }
-  ]
-  }
+  ```
 
-  ## Notes for Frontend
+  ## Frontend Notes
 
-  * Show in table format
-  * Add color badges:
-    pending = yellow
-    in_transit = blue
-    delivered = green
-    failed = red
-  * Show retry button if shipmentRetryCount > 0
+  - Render this as an admin table.
+  - Use `shipmentStatus` for provider/shipment lifecycle.
+  - Use `deliveryStatus` for customer-facing delivery progress.
+  - Show a retry action when `shipmentRetryCount > 0` or `shipmentError` is not empty.
+  - Suggested badge colors: pending yellow, in_transit blue, out_for_delivery purple, delivered green, failed red.

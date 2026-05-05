@@ -5,16 +5,12 @@ info:
 
 http:
   method: GET
-  url: "{{baseUrl}}/api/orders/admin/all?orderStatus=delivered"
+  url: "{{baseUrl}}/api/orders/admin/all"
   headers:
     - name: Authorization
       value: Bearer {{token}}
     - name: ""
       value: ""
-  params:
-    - name: orderStatus
-      value: delivered
-      type: query
   auth: inherit
 
 settings:

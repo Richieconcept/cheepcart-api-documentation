@@ -32,6 +32,11 @@ http:
         value: []
   auth: inherit
 
+runtime:
+  variables:
+    - name: baseUrl
+      value: https://cheepcart-project.onrender.com
+
 settings:
   encodeUrl: true
   timeout: 0
