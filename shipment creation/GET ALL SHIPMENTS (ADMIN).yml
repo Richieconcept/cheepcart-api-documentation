@@ -42,6 +42,7 @@ docs: |-
 
   Each shipment item is an order summary with:
 
+  - `_id`
   - `orderNumber`
   - `trackingNumber`
   - `shipmentStatus`
@@ -51,6 +52,11 @@ docs: |-
   - `createdAt`
 
   Results are sorted newest first.
+
+  Important frontend mapping:
+
+  - Use `_id` as `orderId` for `POST /api/shipments/retry/:orderId`.
+  - Use `trackingNumber` for `GET /api/shipments/track/:trackingNumber`.
 
   ## Example Request
 
@@ -102,7 +108,9 @@ docs: |-
   ## Frontend Notes
 
   - Render this as an admin table.
+  - Use `_id` when retrying shipment tracking.
+  - Use `trackingNumber` when opening the track shipment endpoint.
   - Use `shipmentStatus` for provider/shipment lifecycle.
   - Use `deliveryStatus` for customer-facing delivery progress.
   - Show a retry action when `shipmentRetryCount > 0` or `shipmentError` is not empty.
-  - Suggested badge colors: pending yellow, in_transit blue, out_for_delivery purple, delivered green, failed red.
+  - Suggested badge colors: pending yellow, picked teal, in_transit blue, delivered green, issue red, delayed orange, unknown gray.

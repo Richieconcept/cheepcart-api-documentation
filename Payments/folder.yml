@@ -5,3 +5,16 @@ info:
 
 request:
   auth: inherit
+
+docs:
+  content: |-
+    # Payments APIs
+
+    This folder contains order payment endpoints and the admin Paystack dashboard endpoint.
+
+    ## Frontend Notes
+
+    - Customers use initialize and verify endpoints during checkout.
+    - Admin dashboard uses `GET /api/payments/admin/paystack-wallet`.
+    - The frontend must not call Paystack directly because Paystack requires the secret key.
+  type: text/markdown

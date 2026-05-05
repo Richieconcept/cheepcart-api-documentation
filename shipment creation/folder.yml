@@ -6,47 +6,77 @@ info:
 request:
   auth: inherit
 
-docs: |-
-  # Shipment APIs
+docs:
+  content: |-
+    # Shipment APIs
 
-  This folder contains the shipment creation, tracking, admin monitoring, and retry endpoints.
+    Base URL:
 
-  ## Base URL
+    ```txt
+    /api/shipments
+    ```
 
-  `/api/shipments`
+    This folder contains shipment creation, tracking, admin monitoring, and retry endpoints.
 
-  ## Endpoints
+    ## Endpoints
 
-  | Method | Endpoint | Access | Purpose |
-  |--------|----------|--------|---------|
-  | POST | `/api/shipments/create/:orderId` | Admin | Create a Redstar shipment for a paid and confirmed order. |
-  | GET | `/api/shipments/track/:trackingNumber` | Authenticated user | Track a shipment using the Redstar waybill/tracking number. |
-  | GET | `/api/shipments/get-all-shipments` | Admin | List all orders that have tracking numbers. |
-  | POST | `/api/shipments/retry/:orderId` | Admin | Force a fresh tracking update for one shipment. |
+    | Method | Endpoint | Access | Frontend use |
+    |--------|----------|--------|--------------|
+    | POST | `/api/shipments/create/:orderId` | Admin | Manually create a Redstar shipment for a paid and confirmed order. |
+    | GET | `/api/shipments/track/:trackingNumber` | Authenticated user | Track one shipment with its Redstar waybill/tracking number. |
+    | GET | `/api/shipments/get-all-shipments` | Admin | Load the admin shipment monitor table. |
+    | POST | `/api/shipments/retry/:orderId` | Admin | Retry tracking refresh for one order. |
 
-  ## Shipment Lifecycle
+    ## Important Frontend Rule
 
-  - Order is created with `shipmentStatus: "not_created"`.
-  - After payment succeeds, backend attempts to create Redstar shipment automatically.
-  - If shipment creation succeeds, the order receives a `trackingNumber`.
-  - Tracking can then be refreshed manually through the track endpoint or automatically by the shipment sync job.
-  - When Redstar reports delivery, the order becomes `delivered`.
+    Track and retry use different URL parameters:
 
-  ## Important Fields
+    | Action | Use this field | Example |
+    |--------|----------------|---------|
+    | Track shipment | `trackingNumber` | `GET /api/shipments/track/RSASB1186443` |
+    | Retry shipment | order `_id` | `POST /api/shipments/retry/69e355eb827eaadacc96e7ca` |
 
-  | Field | Description |
-  |-------|-------------|
-  | `shipmentStatus` | Backend shipment lifecycle such as `not_created`, `created`, `in_transit`, `delivered`, or `failed`. |
-  | `deliveryStatus` | Customer-facing delivery progress mapped from Redstar status. |
-  | `trackingNumber` | Redstar waybill number used for tracking. |
-  | `shipmentReference` | Provider/order reference returned by Redstar. |
-  | `shipmentRetryCount` | Number of failed automatic tracking attempts. |
-  | `shipmentError` | Last tracking or shipment error message, if any. |
-  | `lastTrackedAt` | Last time tracking was refreshed. |
+    When using `GET /api/shipments/get-all-shipments`, each row contains both fields:
 
-  ## Frontend Guidance
+    - `_id` is the `orderId` for retry.
+    - `trackingNumber` is the waybill for tracking.
 
-  - Customer order pages should use `GET /api/shipments/track/:trackingNumber` when a tracking number exists.
-  - Admin shipment monitor should use `GET /api/shipments/get-all-shipments`.
-  - Admin retry buttons should call `POST /api/shipments/retry/:orderId`.
-  - Admin manual shipment creation should call `POST /api/shipments/create/:orderId`.
+    ## Shipment Lifecycle
+
+    - Order starts with `shipmentStatus: "not_created"`.
+    - After payment succeeds, backend attempts to create a Redstar shipment automatically.
+    - If shipment creation succeeds, the order receives a `trackingNumber`.
+    - Tracking can be refreshed manually with the track endpoint or automatically by the shipment sync job.
+    - When Redstar reports delivery, the order becomes `delivered`.
+
+    ## Important Fields
+
+    | Field | Description |
+    |-------|-------------|
+    | `shipmentStatus` | Backend shipment lifecycle such as `not_created`, `created`, `delivered`, or `failed`. |
+    | `deliveryStatus` | Customer-facing delivery progress mapped from Redstar status. |
+    | `trackingNumber` | Redstar waybill number used for tracking. |
+    | `shipmentReference` | Provider/order reference returned by Redstar. |
+    | `shipmentRetryCount` | Number of failed automatic tracking attempts. |
+    | `shipmentError` | Last tracking or shipment error message, if any. |
+    | `lastTrackedAt` | Last time tracking was refreshed. |
+
+    ## Delivery Status Values
+
+    Current mapped values are:
+
+    - `pending`
+    - `picked`
+    - `in_transit`
+    - `delivered`
+    - `issue`
+    - `delayed`
+    - `unknown`
+
+    ## Frontend Flow
+
+    1. Admin shipment table: call `GET /api/shipments/get-all-shipments`.
+    2. Track button/details: call `GET /api/shipments/track/:trackingNumber`.
+    3. Retry button: call `POST /api/shipments/retry/:orderId` using the row `_id`.
+    4. Manual create button: call `POST /api/shipments/create/:orderId`.
+  type: text/markdown

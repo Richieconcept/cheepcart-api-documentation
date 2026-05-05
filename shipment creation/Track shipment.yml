@@ -1,5 +1,5 @@
 info:
-  name: Track shipment
+  name: Track shipment by tracking number
   type: http
   seq: 2
 
@@ -22,21 +22,27 @@ settings:
   maxRedirects: 5
 
 docs: |-
-  # Track Shipment
+  # Track Shipment By Tracking Number
 
   `GET /api/shipments/track/:trackingNumber`
 
   ## Description
 
-  Fetches live shipment tracking information from Redstar using the shipment tracking number.
+  Fetches live Redstar tracking information with the shipment tracking number/waybill number.
 
-  Use this endpoint on the customer order details page or on a public/authenticated tracking screen after an order has a `trackingNumber`.
+  Use this endpoint on the customer order details page after the order already has a `trackingNumber`.
+
+  Do not call this endpoint with the order `_id`. It only accepts the Redstar waybill/tracking number.
 
   ## Authentication
 
-  Bearer token required.
+  Required.
 
-  Any authenticated user can call this endpoint. It is not admin-only.
+  ```http
+  Authorization: Bearer <user-or-admin-token>
+  ```
+
+  Any authenticated user can call this endpoint. It is not admin-only, but the user must be logged in because the backend route uses `protect`.
 
   ## Path Parameters
 
@@ -44,26 +50,36 @@ docs: |-
   |------|------|----------|-------------|
   | `trackingNumber` | string | Yes | Redstar waybill/tracking number saved on the order. Example: `RSASB1186443`. |
 
+  Frontend should use:
+
+  ```js
+  GET /api/shipments/track/${encodeURIComponent(order.trackingNumber)}
+  ```
+
   ## What It Does Internally
 
   - Calls Redstar tracking API through `trackRedstarShipment`.
   - Converts Redstar status code into app status with `mapToAppStatus`.
-  - Finds the order with the same `trackingNumber`.
-  - Updates `deliveryStatus`, `orderStatus`, and `lastTrackedAt`.
-  - If delivered, sets `orderStatus` and `shipmentStatus` to `delivered`.
+  - Looks for an order with the same `trackingNumber`.
+  - If an order is found, updates `deliveryStatus`, `orderStatus`, and `lastTrackedAt`.
+  - If Redstar reports delivery, sets `orderStatus` and `shipmentStatus` to `delivered`.
+  - If no matching order is found, it can still return provider tracking data, but no order is updated.
 
-  ## App Status Values
+  ## Mapped Status Values
 
   Frontend should display the `shipment.status` field, not the raw `statusCode`.
 
-  Possible mapped values include:
+  Current backend mapped values are:
 
   - `pending`
-  - `created`
+  - `picked`
   - `in_transit`
-  - `out_for_delivery`
   - `delivered`
-  - `failed`
+  - `issue`
+  - `delayed`
+  - `unknown`
+
+  `shipment.orderStatus` is the order status derived from the delivery status. Common values are `processing`, `shipped`, and `delivered`.
 
   ## Example Request
 
@@ -73,6 +89,8 @@ docs: |-
   ```
 
   ## Success Response
+
+  HTTP `200`
 
   ```json
   {
@@ -111,7 +129,7 @@ docs: |-
 
   ## Tracking Not Available Yet
 
-  Redstar may return an error when a newly created waybill is not ready for tracking. In that case the API returns a safe pending response:
+  Redstar may return a provider error when a newly created waybill is not ready for tracking. In that case the API still returns HTTP `200` with a safe pending response:
 
   ```json
   {
@@ -126,6 +144,8 @@ docs: |-
 
   ## Validation Error
 
+  HTTP `400`
+
   ```json
   {
     "success": false,
@@ -133,8 +153,21 @@ docs: |-
   }
   ```
 
+  ## Other Error Response
+
+  HTTP `500`
+
+  ```json
+  {
+    "success": false,
+    "message": "Provider error message"
+  }
+  ```
+
   ## Frontend Notes
 
+  - Get the `trackingNumber` from the order object or from `GET /api/shipments/get-all-shipments`.
+  - Do not use the order `_id` for this endpoint.
   - Use `shipment.status` for badges and progress state.
   - Use `shipment.timeline` to render the tracking steps.
   - If response is pending with a message, show a soft message and let the user retry later.

@@ -1,5 +1,5 @@
 info:
-  name: Retry shipment tracking
+  name: Retry shipment tracking admin
   type: http
   seq: 4
 
@@ -22,7 +22,7 @@ settings:
   maxRedirects: 5
 
 docs: |-
-  # Retry Shipment Tracking
+  # Retry Shipment Tracking Admin
 
   `POST /api/shipments/retry/:orderId`
 
@@ -30,19 +30,31 @@ docs: |-
 
   Forces an immediate Redstar tracking refresh for one order.
 
-  Use this from the admin shipment monitor when a shipment has a tracking number but the automatic sync failed, retry count increased, or `shipmentError` is present.
+  Use this from the admin shipment monitor when a shipment already has a `trackingNumber` but automatic tracking failed, `shipmentRetryCount` increased, or `shipmentError` is present.
+
+  This endpoint uses the order `_id`, not the tracking number.
 
   ## Authentication
 
-  Bearer token required.
+  Required.
 
-  Admin only.
+  ```http
+  Authorization: Bearer <admin-token>
+  ```
+
+  Admin only. The backend route uses both `protect` and `adminOnly`.
 
   ## Path Parameters
 
   | Name | Type | Required | Description |
   |------|------|----------|-------------|
   | `orderId` | string | Yes | MongoDB `_id` of the order whose shipment tracking should be retried. |
+
+  Frontend should use the `_id` from each row returned by `GET /api/shipments/get-all-shipments`:
+
+  ```js
+  POST /api/shipments/retry/${shipment._id}
+  ```
 
   ## What It Does Internally
 
@@ -62,6 +74,10 @@ docs: |-
   ```
 
   ## Success Response
+
+  HTTP `200`
+
+  The backend returns the full updated order document in `order`. Frontend can use these fields to refresh the shipment table row:
 
   ```json
   {
@@ -83,6 +99,8 @@ docs: |-
 
   ## Tracking Not Available Yet
 
+  If Redstar says the tracking number is not ready yet, the backend returns HTTP `200` so the admin UI can show a soft message instead of treating it as a hard failure.
+
   ```json
   {
     "success": true,
@@ -93,7 +111,11 @@ docs: |-
   }
   ```
 
+  In this response, no updated `order` is returned. Keep the existing table row and show the message.
+
   ## Shipment Not Found
+
+  HTTP `404`
 
   ```json
   {
@@ -102,9 +124,25 @@ docs: |-
   }
   ```
 
+  This means either the order does not exist or the order does not have a `trackingNumber` yet.
+
+  ## Other Error Response
+
+  HTTP `500`
+
+  ```json
+  {
+    "success": false,
+    "message": "Provider or server error message"
+  }
+  ```
+
   ## Frontend Notes
 
   - Show this action only to admins.
+  - Use the shipment row `_id` as `orderId`.
+  - Do not send the `trackingNumber` in the URL for retry.
   - Useful button label: `Retry tracking`.
   - Disable while request is running to avoid duplicate clicks.
   - After success, refresh the shipment table row with the returned `order`.
+  - If the response has `shipment.status: "pending"` and no `order`, keep the row unchanged and show the returned message.
