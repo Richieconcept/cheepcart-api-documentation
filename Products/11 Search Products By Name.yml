@@ -1,0 +1,144 @@
+info:
+  name: 11 Search Products By Name
+  type: http
+  seq: 11
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/products?keyword=iphone&page=1"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Search Products By Name
+
+  ## Endpoint
+  `GET /api/products?keyword=<searchText>`
+
+  ## Description
+
+  Searches active storefront products using the `keyword` query parameter. Use this endpoint for the normal product search box where customers search by product name.
+
+  The current backend matches the keyword against:
+  - Product `name`.
+  - Product `description`.
+
+  Search is case-insensitive.
+
+  ## Authentication
+
+  Not required.
+
+  ## Query parameters
+
+  `keyword`
+  - Type: string
+  - Required: yes for product search.
+  - Searches product `name` and `description`.
+  - Case-insensitive.
+
+  `page`
+  - Type: number
+  - Required: no.
+  - Default: `1`.
+  - The backend returns `10` products per page.
+
+  ## Backend filter behavior
+
+  The backend keeps search results public-safe by only returning active products:
+
+  ```js
+  {
+    isActive: true,
+    $or: [
+      { name: { $regex: req.query.keyword, $options: "i" } },
+      { description: { $regex: req.query.keyword, $options: "i" } }
+    ]
+  }
+  ```
+
+  If no `sort` query is sent, search results use the normal product list sort:
+
+  ```js
+  { isFeatured: -1, createdAt: -1 }
+  ```
+
+  ## Example requests
+
+  Search by product name:
+
+  ```txt
+  GET /api/products?keyword=iphone
+  ```
+
+  Search with pagination:
+
+  ```txt
+  GET /api/products?keyword=iphone&page=2
+  ```
+
+  Search inside one category:
+
+  ```txt
+  GET /api/products?keyword=iphone&category=662b7f8f4f9c2e2d7c111111
+  ```
+
+  Search and sort cheapest first:
+
+  ```txt
+  GET /api/products?keyword=iphone&sort=price_asc
+  ```
+
+  Search within a price range:
+
+  ```txt
+  GET /api/products?keyword=iphone&min=50000&max=900000
+  ```
+
+  ## Sample success response
+
+  ```json
+  {
+    "total": 1,
+    "page": 1,
+    "pages": 1,
+    "products": [
+      {
+        "_id": "662b80d44f9c2e2d7c333333",
+        "name": "iPhone 14 Pro",
+        "slug": "iphone-14-pro",
+        "description": "Apple smartphone with premium camera features.",
+        "category": {
+          "_id": "662b7f8f4f9c2e2d7c111111",
+          "name": "Phones",
+          "slug": "phones"
+        },
+        "brand": "Apple",
+        "price": 950000,
+        "stock": 10,
+        "images": [
+          {
+            "secure_url": "https://res.cloudinary.com/demo/image/upload/products/iphone.jpg",
+            "public_id": "cheepcart/products/iphone"
+          }
+        ],
+        "averageRating": 4.8,
+        "totalReviews": 12,
+        "isActive": true,
+        "isFeatured": true
+      }
+    ]
+  }
+  ```
+
+  ## Frontend notes
+
+  - Use `keyword` for the search input value.
+  - Reset `page` to `1` when the search keyword changes.
+  - There is no separate `/search` route in the current backend.
+  - Search can be combined with category, featured, price range, sorting, and pagination.

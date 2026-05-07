@@ -11,6 +11,13 @@ http:
       value: Bearer {{token}}
   auth: inherit
 
+runtime:
+  variables:
+    - name: baseUrl
+      value: https://cheepcart-project.onrender.com
+    - name: token
+      value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5OGM4NzQyOGNkZjc3ZjQwOGJhZGJiMyIsImlhdCI6MTc3ODE0OTY4OCwiZXhwIjoxNzc4NzU0NDg4fQ.o3uuRnzD1t--2zrRS4MveUolYvcvCpP84kZbAI888iI
+
 settings:
   encodeUrl: true
   timeout: 0

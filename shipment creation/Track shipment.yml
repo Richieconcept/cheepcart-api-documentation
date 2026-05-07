@@ -6,13 +6,13 @@ info:
 http:
   method: GET
   url: "{{baseUrl}}/api/shipments/track/:trackingNumber"
-  params:
-    - name: trackingNumber
-      value: RSASB1186443
-      type: path
   headers:
     - name: Authorization
       value: Bearer {{token}}
+  params:
+    - name: trackingNumber
+      value: RSMLD1171636
+      type: path
   auth: inherit
 
 settings:
