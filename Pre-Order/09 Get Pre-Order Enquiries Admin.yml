@@ -76,13 +76,33 @@ docs: |-
           "name": "Luxury Travel Bag",
           "slug": "luxury-travel-bag",
           "price": 45000,
+          "image": {
+            "secure_url": "https://res.cloudinary.com/demo/image/upload/bag-front.jpg",
+            "public_id": "cheepcart/pre-order-products/bag-front"
+          },
+          "images": [
+            {
+              "secure_url": "https://res.cloudinary.com/demo/image/upload/bag-front.jpg",
+              "public_id": "cheepcart/pre-order-products/bag-front"
+            }
+          ],
           "status": "available",
           "isActive": true
         },
         "productSnapshot": {
           "name": "Luxury Travel Bag",
           "slug": "luxury-travel-bag",
-          "price": 45000
+          "price": 45000,
+          "image": {
+            "secure_url": "https://res.cloudinary.com/demo/image/upload/bag-front.jpg",
+            "public_id": "cheepcart/pre-order-products/bag-front"
+          },
+          "images": [
+            {
+              "secure_url": "https://res.cloudinary.com/demo/image/upload/bag-front.jpg",
+              "public_id": "cheepcart/pre-order-products/bag-front"
+            }
+          ]
         },
         "fullName": "Jane Doe",
         "phone": "08012345678",

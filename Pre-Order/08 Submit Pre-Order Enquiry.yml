@@ -111,11 +111,17 @@ docs: |-
         "name": "Luxury Travel Bag",
         "slug": "luxury-travel-bag",
         "price": 45000,
-        "image": {
-          "secure_url": "https://res.cloudinary.com/demo/image/upload/bag.jpg",
-          "public_id": "cheepcart/pre-order-products/bag"
-        }
-      },
+                "image": {
+                  "secure_url": "https://res.cloudinary.com/demo/image/upload/bag.jpg",
+                  "public_id": "cheepcart/pre-order-products/bag"
+                },
+                "images": [
+                  {
+                    "secure_url": "https://res.cloudinary.com/demo/image/upload/bag.jpg",
+                    "public_id": "cheepcart/pre-order-products/bag"
+                  }
+                ]
+              },
       "fullName": "Jane Doe",
       "phone": "08012345678",
       "email": "jane@example.com",

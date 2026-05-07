@@ -31,6 +31,10 @@ docs: |-
 
   The frontend should map over the `products` array and show each product image, name, optional price, and status.
 
+  Each product includes:
+  - `image` - the first image, useful as the card thumbnail.
+  - `images` - all uploaded images, up to 4, useful for a product gallery.
+
   ## Optional query parameters
 
   `page`
@@ -76,9 +80,19 @@ docs: |-
         "description": "Available for China pre-order.",
         "price": 45000,
         "image": {
-          "secure_url": "https://res.cloudinary.com/demo/image/upload/bag.jpg",
-          "public_id": "cheepcart/pre-order-products/bag"
+          "secure_url": "https://res.cloudinary.com/demo/image/upload/bag-front.jpg",
+          "public_id": "cheepcart/pre-order-products/bag-front"
         },
+        "images": [
+          {
+            "secure_url": "https://res.cloudinary.com/demo/image/upload/bag-front.jpg",
+            "public_id": "cheepcart/pre-order-products/bag-front"
+          },
+          {
+            "secure_url": "https://res.cloudinary.com/demo/image/upload/bag-side.jpg",
+            "public_id": "cheepcart/pre-order-products/bag-side"
+          }
+        ],
         "status": "available",
         "displayOrder": 1,
         "isActive": true,
@@ -92,3 +106,5 @@ docs: |-
   ## Frontend usage tip
 
   If `price` is missing or null, show `Contact for price` or hide the price.
+
+  Use `image.secure_url` for a simple card thumbnail, or use `images` when showing multiple product photos.

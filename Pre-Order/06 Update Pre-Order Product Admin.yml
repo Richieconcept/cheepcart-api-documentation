@@ -24,7 +24,7 @@ http:
       - name: displayOrder
         type: text
         value: "2"
-      - name: image
+      - name: images
         type: file
         value: []
   auth: inherit
@@ -51,7 +51,7 @@ docs: |-
   Updates an existing pre-order product.
 
   You only need to send the fields you want to change.
-  If you send a new `image` file, the backend uploads it to Cloudinary and replaces the saved product image.
+  If you send new `images` files, the backend uploads them to Cloudinary and replaces the saved product images.
 
   ## URL parameter
 
@@ -72,13 +72,18 @@ docs: |-
   displayOrder: 2
   ```
 
-  To replace the product image, also send:
+  To replace the product images, also send 1 to 4 files:
 
   ```txt
-  image: [file]
+  images: [file]
+  images: [file]
+  images: [file]
+  images: [file]
   ```
 
-  Important: `image` is optional during update. If the admin does not choose a new image, do not send the `image` field.
+  Important: `images` is optional during update. If the admin does not choose new images, do not send the `images` field.
+
+  The old single-file key `image` still works, but `images` is preferred for new frontend work.
 
   ## Other fields you can update
 
@@ -89,12 +94,13 @@ docs: |-
 
   ## Image replacement behavior
 
-  - Send `image` as a file using the exact key `image`.
+  - Send 1 to 4 files using the exact key `images`.
   - Allowed file type: image.
-  - Max file size: 5MB.
-  - Backend uploads the new file to Cloudinary.
-  - Backend saves the returned `secure_url` and `public_id`.
-  - Backend deletes the old Cloudinary image using the old `public_id`.
+  - Max file size: 5MB per image.
+  - Backend uploads the new files to Cloudinary.
+  - Backend saves the returned `secure_url` and `public_id` values in `images`.
+  - Backend keeps `image` as the first image for thumbnail compatibility.
+  - Backend deletes the old Cloudinary images using the old `public_id` values.
 
   ## Sample success response
 
@@ -107,9 +113,19 @@ docs: |-
       "slug": "luxury-travel-bag-updated",
       "price": 48000,
       "image": {
-        "secure_url": "https://res.cloudinary.com/demo/image/upload/v1234567890/cheepcart/pre-order-products/new-bag.jpg",
-        "public_id": "cheepcart/pre-order-products/new-bag"
+        "secure_url": "https://res.cloudinary.com/demo/image/upload/v1234567890/cheepcart/pre-order-products/new-bag-front.jpg",
+        "public_id": "cheepcart/pre-order-products/new-bag-front"
       },
+      "images": [
+        {
+          "secure_url": "https://res.cloudinary.com/demo/image/upload/v1234567890/cheepcart/pre-order-products/new-bag-front.jpg",
+          "public_id": "cheepcart/pre-order-products/new-bag-front"
+        },
+        {
+          "secure_url": "https://res.cloudinary.com/demo/image/upload/v1234567890/cheepcart/pre-order-products/new-bag-side.jpg",
+          "public_id": "cheepcart/pre-order-products/new-bag-side"
+        }
+      ],
       "status": "available",
       "displayOrder": 2,
       "isActive": true
@@ -134,8 +150,10 @@ docs: |-
   formData.append("status", status);
   formData.append("displayOrder", displayOrder);
 
-  if (imageFile) {
-    formData.append("image", imageFile);
+  if (imageFiles.length > 0) {
+    imageFiles.slice(0, 4).forEach((imageFile) => {
+      formData.append("images", imageFile);
+    });
   }
 
   await fetch(`${baseUrl}/api/pre-order-products/${productId}`, {

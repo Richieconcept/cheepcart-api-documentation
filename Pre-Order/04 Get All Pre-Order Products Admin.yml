@@ -55,9 +55,19 @@ docs: |-
         "description": "Available for China pre-order.",
         "price": 45000,
         "image": {
-          "secure_url": "https://res.cloudinary.com/demo/image/upload/bag.jpg",
-          "public_id": "cheepcart/pre-order-products/bag"
+          "secure_url": "https://res.cloudinary.com/demo/image/upload/bag-front.jpg",
+          "public_id": "cheepcart/pre-order-products/bag-front"
         },
+        "images": [
+          {
+            "secure_url": "https://res.cloudinary.com/demo/image/upload/bag-front.jpg",
+            "public_id": "cheepcart/pre-order-products/bag-front"
+          },
+          {
+            "secure_url": "https://res.cloudinary.com/demo/image/upload/bag-side.jpg",
+            "public_id": "cheepcart/pre-order-products/bag-side"
+          }
+        ],
         "status": "available",
         "displayOrder": 1,
         "isActive": true,
@@ -67,3 +77,8 @@ docs: |-
     ]
   }
   ```
+
+  ## Image fields
+
+  - `image` is the first uploaded image for thumbnail display.
+  - `images` contains all uploaded images, up to 4.

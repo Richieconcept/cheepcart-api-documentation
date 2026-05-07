@@ -27,7 +27,7 @@ http:
       - name: displayOrder
         type: text
         value: "1"
-      - name: image
+      - name: images
         type: file
         value: []
   auth: inherit
@@ -56,7 +56,7 @@ docs: |-
   Required. Admin only.
 
   ## What it does
-  Creates a product that will appear on the frontend pre-order page and uploads the image to Cloudinary in the same request.
+  Creates a product that will appear on the frontend pre-order page and uploads 1 to 4 images to Cloudinary in the same request.
 
   This does not create a normal store product. It does not require category, stock, weight, or checkout data.
 
@@ -80,10 +80,15 @@ docs: |-
   price: 45000
   status: available
   displayOrder: 1
-  image: [file]
+  images: [file]
+  images: [file]
+  images: [file]
+  images: [file]
   ```
 
-  Important: `image` is a file field, not a URL string. The backend uploads this file to Cloudinary, then saves the returned `secure_url` and `public_id`.
+  Important: `images` is a file field, not a URL string. Send 1 to 4 image files using the same key. The backend uploads each file to Cloudinary, then saves the returned `secure_url` and `public_id`.
+
+  The old single-file key `image` still works, but `images` is preferred for new frontend work.
 
   ## Field descriptions
 
@@ -103,13 +108,13 @@ docs: |-
   - Use only when admin knows the price.
   - If price is not known, do not send it.
 
-  `image`
+  `images`
   - Type: file
   - Required: yes
-  - Send one image file using the exact key `image`.
+  - Send 1 to 4 image files using the exact key `images`.
   - Allowed file type: image.
-  - Max file size: 5MB.
-  - Backend stores the image in Cloudinary folder `cheepcart/pre-order-products`.
+  - Max file size: 5MB per image.
+  - Backend stores the images in Cloudinary folder `cheepcart/pre-order-products`.
 
   `status`
   - Type: string
@@ -134,9 +139,19 @@ docs: |-
       "description": "Available for China pre-order.",
       "price": 45000,
       "image": {
-        "secure_url": "https://res.cloudinary.com/demo/image/upload/v1234567890/cheepcart/pre-order-products/bag.jpg",
-        "public_id": "cheepcart/pre-order-products/bag"
+        "secure_url": "https://res.cloudinary.com/demo/image/upload/v1234567890/cheepcart/pre-order-products/bag-front.jpg",
+        "public_id": "cheepcart/pre-order-products/bag-front"
       },
+      "images": [
+        {
+          "secure_url": "https://res.cloudinary.com/demo/image/upload/v1234567890/cheepcart/pre-order-products/bag-front.jpg",
+          "public_id": "cheepcart/pre-order-products/bag-front"
+        },
+        {
+          "secure_url": "https://res.cloudinary.com/demo/image/upload/v1234567890/cheepcart/pre-order-products/bag-side.jpg",
+          "public_id": "cheepcart/pre-order-products/bag-side"
+        }
+      ],
       "status": "available",
       "displayOrder": 1,
       "isActive": true
@@ -154,11 +169,19 @@ docs: |-
   }
   ```
 
-  Missing image:
+  Missing images:
 
   ```json
   {
-    "message": "Product image with secure_url and public_id is required"
+    "message": "At least one product image with secure_url and public_id is required"
+  }
+  ```
+
+  More than 4 images:
+
+  ```json
+  {
+    "message": "You can upload up to 4 pre-order product images"
   }
   ```
 
@@ -171,7 +194,9 @@ docs: |-
   formData.append("price", price);
   formData.append("status", status);
   formData.append("displayOrder", displayOrder);
-  formData.append("image", imageFile);
+  imageFiles.slice(0, 4).forEach((imageFile) => {
+    formData.append("images", imageFile);
+  });
 
   await fetch(`${baseUrl}/api/pre-order-products`, {
     method: "POST",
