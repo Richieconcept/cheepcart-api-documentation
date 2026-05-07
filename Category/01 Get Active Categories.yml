@@ -1,0 +1,96 @@
+info:
+  name: 01 Get Active Categories
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/categories"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Get Active Categories
+
+  ## Endpoint
+  `GET /api/categories`
+
+  ## Description
+
+  Returns all active categories for the storefront. Use this endpoint to build category menus, category filter chips, homepage category sections, and product browsing filters.
+
+  ## Authentication
+
+  Not required.
+
+  ## Sorting
+
+  The backend sorts categories by:
+
+  1. `order` ascending.
+  2. `createdAt` ascending when categories have the same `order`.
+
+  Frontend should use the returned array order directly.
+
+  ## Response fields
+
+  `success`
+  - Type: boolean
+  - Shows whether the request completed successfully.
+
+  `categories`
+  - Type: array
+  - Contains active category objects.
+
+  Category object fields:
+  - `_id` - category ID. Use this value when filtering products.
+  - `name` - display name.
+  - `slug` - URL-friendly name generated from `name`.
+  - `image` - optional image URL.
+  - `order` - display sorting number.
+  - `isActive` - active status.
+  - `createdAt` - creation timestamp.
+  - `updatedAt` - last update timestamp.
+
+  ## Sample success response
+
+  ```json
+  {
+    "success": true,
+    "categories": [
+      {
+        "_id": "662b7f8f4f9c2e2d7c111111",
+        "name": "Phones",
+        "slug": "phones",
+        "image": "https://res.cloudinary.com/demo/image/upload/categories/phones.jpg",
+        "order": 1,
+        "isActive": true,
+        "createdAt": "2026-04-20T10:00:00.000Z",
+        "updatedAt": "2026-04-20T10:00:00.000Z"
+      },
+      {
+        "_id": "662b7f8f4f9c2e2d7c222222",
+        "name": "Laptops",
+        "slug": "laptops",
+        "image": "https://res.cloudinary.com/demo/image/upload/categories/laptops.jpg",
+        "order": 2,
+        "isActive": true,
+        "createdAt": "2026-04-20T11:00:00.000Z",
+        "updatedAt": "2026-04-20T11:00:00.000Z"
+      }
+    ]
+  }
+  ```
+
+  ## Frontend use
+
+  Use `_id` from this response as the `category` query value when calling the product list endpoint:
+
+  ```txt
+  GET /api/products?category=662b7f8f4f9c2e2d7c111111
+  ```

@@ -1,0 +1,110 @@
+info:
+  name: 07 Sort Products Most Expensive First
+  type: http
+  seq: 7
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/products?sort=price_desc&page=1"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Sort Products Most Expensive First
+
+  ## Endpoint
+  `GET /api/products?sort=price_desc`
+
+  ## Description
+
+  Returns active products sorted from the highest price to the lowest price. Use this when the frontend user selects a sorting option like `Price: High to Low`.
+
+  ## Authentication
+
+  Not required.
+
+  ## Query parameters
+
+  `sort`
+  - Type: string
+  - Required: yes for this sorting mode.
+  - Value: `price_desc`.
+
+  `page`
+  - Type: number
+  - Required: no.
+  - Default: `1`.
+  - The backend returns `10` products per page.
+
+  ## Backend sort behavior
+
+  ```js
+  { price: -1 }
+  ```
+
+  `-1` means descending order, so higher prices come first.
+
+  ## Example requests
+
+  All products, most expensive first:
+
+  ```txt
+  GET /api/products?sort=price_desc
+  ```
+
+  Category products, most expensive first:
+
+  ```txt
+  GET /api/products?category=662b7f8f4f9c2e2d7c111111&sort=price_desc
+  ```
+
+  Search results, most expensive first:
+
+  ```txt
+  GET /api/products?keyword=laptop&sort=price_desc
+  ```
+
+  ## Sample success response
+
+  ```json
+  {
+    "total": 2,
+    "page": 1,
+    "pages": 1,
+    "products": [
+      {
+        "_id": "662b80d44f9c2e2d7c444444",
+        "name": "iPhone 14 Pro",
+        "slug": "iphone-14-pro",
+        "price": 950000,
+        "category": {
+          "_id": "662b7f8f4f9c2e2d7c111111",
+          "name": "Phones",
+          "slug": "phones"
+        }
+      },
+      {
+        "_id": "662b80d44f9c2e2d7c333333",
+        "name": "Budget Android Phone",
+        "slug": "budget-android-phone",
+        "price": 120000,
+        "category": {
+          "_id": "662b7f8f4f9c2e2d7c111111",
+          "name": "Phones",
+          "slug": "phones"
+        }
+      }
+    ]
+  }
+  ```
+
+  ## Frontend notes
+
+  - Label this as `Price: High to Low`.
+  - Keep the user's current filters when changing sort.
+  - Public product listing only returns active products.

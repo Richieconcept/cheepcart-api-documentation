@@ -1,0 +1,182 @@
+info:
+  name: Products
+  type: folder
+  seq: 3
+
+request:
+  auth: inherit
+
+docs:
+  content: |-
+    # Products API
+
+    ## What this folder is for
+
+    This folder documents all normal product endpoints implemented in the backend.
+
+    Products are used for:
+    - Storefront product grids.
+    - Product detail pages.
+    - Category pages.
+    - Search results.
+    - Price filtering.
+    - Sorting controls.
+    - Admin product management.
+
+    ## Base path
+
+    All product endpoints are mounted under:
+
+    ```txt
+    /api/products
+    ```
+
+    ## Public endpoints
+
+    These do not require authentication:
+
+    - `GET /api/products`
+    - `GET /api/products/:slug`
+
+    Public endpoints only return products where:
+
+    ```txt
+    isActive = true
+    ```
+
+    ## Admin endpoints
+
+    These require an admin token:
+
+    - `POST /api/products`
+    - `PUT /api/products/:id`
+    - `DELETE /api/products/:id`
+
+    Header:
+
+    ```json
+    {
+      "Authorization": "Bearer <ADMIN_TOKEN>"
+    }
+    ```
+
+    ## Product data model
+
+    Main product fields:
+
+    `name`
+    - Type: string
+    - Required: yes
+    - Used to generate the product `slug`.
+
+    `slug`
+    - Type: string
+    - Generated automatically from `name`.
+    - Used by the public single product endpoint.
+
+    `description`
+    - Type: string
+    - Required: yes.
+
+    `category`
+    - Type: string
+    - Required: yes.
+    - Must be a valid category `_id` when creating a product.
+
+    `brand`
+    - Type: string
+    - Optional.
+
+    `price`
+    - Type: number
+    - Required: yes.
+
+    `comparePrice`
+    - Type: number
+    - Optional.
+    - If greater than `price`, the backend calculates `discountPercentage`.
+
+    `discountPercentage`
+    - Type: number
+    - Default: `0`.
+    - Calculated during save when `comparePrice` is greater than `price`.
+
+    `weight`
+    - Type: number
+    - Required: yes.
+    - Used during shipping calculations.
+
+    `stock`
+    - Type: number
+    - Required: yes.
+
+    `sold`
+    - Type: number
+    - Default: `0`.
+    - Used for `sort=best_selling`.
+
+    `images`
+    - Type: array.
+    - Each image should contain `secure_url` and `public_id`.
+
+    `averageRating`
+    - Type: number
+    - Default: `0`.
+
+    `totalReviews`
+    - Type: number
+    - Default: `0`.
+
+    `isActive`
+    - Type: boolean
+    - Default: `true`.
+    - Public product APIs only return active products.
+
+    `isFeatured`
+    - Type: boolean
+    - Default: `false`.
+    - Used by default product sorting and `featured=true` filtering.
+
+    ## Product list sorting
+
+    `GET /api/products` supports:
+
+    - No `sort`: featured products first, then newest products.
+    - `sort=price_asc`: cheapest first.
+    - `sort=price_desc`: most expensive first.
+    - `sort=best_selling`: highest `sold` count first.
+
+    ## Product list filters
+
+    `GET /api/products` supports:
+
+    - `category=<categoryId>`
+    - `featured=true`
+    - `keyword=<search text>`
+    - `min=<minimum price>`
+    - `max=<maximum price>`
+    - `page=<page number>`
+
+    The backend currently uses a fixed limit of `10` products per page.
+
+    ## Category rule
+
+    Product filtering uses category `_id`, not category slug.
+
+    Correct:
+
+    ```txt
+    GET /api/products?category=662b7f8f4f9c2e2d7c111111
+    ```
+
+    Not supported by the current backend:
+
+    ```txt
+    GET /api/products?category=phones
+    ```
+
+    ## Delete behavior
+
+    `DELETE /api/products/:id` permanently deletes the product from the database.
+    It is not a soft delete in the current implementation.
+  type: text/markdown

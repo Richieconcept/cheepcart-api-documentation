@@ -1,0 +1,125 @@
+info:
+  name: 02 Create Category Admin
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/categories"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Phones",
+        "image": "https://res.cloudinary.com/demo/image/upload/categories/phones.jpg",
+        "order": 1
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Create Category
+
+  ## Endpoint
+  `POST /api/categories`
+
+  ## Description
+
+  Creates a new product category from the admin dashboard. The backend automatically generates the category `slug` from the `name`.
+
+  ## Authentication
+
+  Required. Admin only.
+
+  Header:
+
+  ```json
+  {
+    "Authorization": "Bearer <ADMIN_TOKEN>",
+    "Content-Type": "application/json"
+  }
+  ```
+
+  ## Request body
+
+  ```json
+  {
+    "name": "Phones",
+    "image": "https://res.cloudinary.com/demo/image/upload/categories/phones.jpg",
+    "order": 1
+  }
+  ```
+
+  ## Field descriptions
+
+  `name`
+  - Type: string
+  - Required: yes
+  - Must be unique.
+  - Used to generate the category slug.
+
+  `image`
+  - Type: string
+  - Required: no
+  - Use a Cloudinary URL or another hosted image URL.
+
+  `order`
+  - Type: number
+  - Required: no
+  - Default: `0`.
+  - Lower numbers appear first in `GET /api/categories`.
+
+  ## Sample success response
+
+  ```json
+  {
+    "success": true,
+    "message": "Category created successfully",
+    "category": {
+      "_id": "662b7f8f4f9c2e2d7c111111",
+      "name": "Phones",
+      "slug": "phones",
+      "image": "https://res.cloudinary.com/demo/image/upload/categories/phones.jpg",
+      "order": 1,
+      "isActive": true,
+      "createdAt": "2026-04-20T10:00:00.000Z",
+      "updatedAt": "2026-04-20T10:00:00.000Z"
+    }
+  }
+  ```
+
+  ## Common errors
+
+  Missing category name:
+
+  ```json
+  {
+    "message": "Category name is required"
+  }
+  ```
+
+  Not logged in or not admin:
+
+  ```json
+  {
+    "message": "Not authorized"
+  }
+  ```
+
+  Duplicate category name:
+
+  ```json
+  {
+    "message": "Category validation failed or duplicate key error"
+  }
+  ```

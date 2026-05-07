@@ -1,0 +1,229 @@
+info:
+  name: 03 Create Product Admin
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/products"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "name": "iPhone 14 Pro",
+        "description": "Apple smartphone with premium camera features.",
+        "category": "662b7f8f4f9c2e2d7c111111",
+        "brand": "Apple",
+        "price": 950000,
+        "comparePrice": 1000000,
+        "weight": 1,
+        "stock": 10,
+        "images": [
+          {
+            "secure_url": "https://res.cloudinary.com/demo/image/upload/products/iphone.jpg",
+            "public_id": "cheepcart/products/iphone"
+          }
+        ]
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Create Product
+
+  ## Endpoint
+  `POST /api/products`
+
+  ## Description
+
+  Creates a new normal store product from the admin dashboard. The product must belong to an existing category. The backend automatically generates a unique `slug` from the product `name`.
+
+  ## Authentication
+
+  Required. Admin only.
+
+  Headers:
+
+  ```json
+  {
+    "Authorization": "Bearer <ADMIN_TOKEN>",
+    "Content-Type": "application/json"
+  }
+  ```
+
+  ## Request body
+
+  ```json
+  {
+    "name": "iPhone 14 Pro",
+    "description": "Apple smartphone with premium camera features.",
+    "category": "662b7f8f4f9c2e2d7c111111",
+    "brand": "Apple",
+    "price": 950000,
+    "comparePrice": 1000000,
+    "weight": 1,
+    "stock": 10,
+    "images": [
+      {
+        "secure_url": "https://res.cloudinary.com/demo/image/upload/products/iphone.jpg",
+        "public_id": "cheepcart/products/iphone"
+      }
+    ]
+  }
+  ```
+
+  ## Field descriptions
+
+  `name`
+  - Type: string
+  - Required: yes
+  - Used to generate the product slug.
+
+  `description`
+  - Type: string
+  - Required: yes.
+
+  `category`
+  - Type: string
+  - Required: yes.
+  - Must be an existing category `_id`.
+  - If the category does not exist, the backend returns `Category not found`.
+
+  `brand`
+  - Type: string
+  - Required: no.
+
+  `price`
+  - Type: number
+  - Required: yes.
+
+  `comparePrice`
+  - Type: number
+  - Required: no.
+  - If greater than `price`, the backend calculates `discountPercentage`.
+
+  `weight`
+  - Type: number
+  - Required: yes.
+  - Used for shipping calculations.
+
+  `stock`
+  - Type: number
+  - Required: yes.
+
+  `images`
+  - Type: array
+  - Required: no by controller, but product cards need images.
+  - Use image objects from the upload API.
+
+  Each image object:
+
+  ```json
+  {
+    "secure_url": "https://res.cloudinary.com/demo/image/upload/products/iphone.jpg",
+    "public_id": "cheepcart/products/iphone"
+  }
+  ```
+
+  ## Automatically generated fields
+
+  `slug`
+  - Generated from `name`.
+  - If another product already uses the same slug, the backend adds a number.
+  - Example: `iphone-14-pro`, then `iphone-14-pro-1`.
+
+  `discountPercentage`
+  - Calculated when `comparePrice` is greater than `price`.
+
+  `sold`
+  - Defaults to `0`.
+
+  `averageRating`
+  - Defaults to `0`.
+
+  `totalReviews`
+  - Defaults to `0`.
+
+  `isActive`
+  - Defaults to `true`.
+
+  `isFeatured`
+  - Defaults to `false`.
+
+  ## Sample success response
+
+  ```json
+  {
+    "message": "Product created successfully",
+    "product": {
+      "_id": "662b80d44f9c2e2d7c333333",
+      "name": "iPhone 14 Pro",
+      "slug": "iphone-14-pro",
+      "description": "Apple smartphone with premium camera features.",
+      "category": "662b7f8f4f9c2e2d7c111111",
+      "brand": "Apple",
+      "price": 950000,
+      "comparePrice": 1000000,
+      "discountPercentage": 5,
+      "weight": 1,
+      "stock": 10,
+      "sold": 0,
+      "images": [
+        {
+          "secure_url": "https://res.cloudinary.com/demo/image/upload/products/iphone.jpg",
+          "public_id": "cheepcart/products/iphone"
+        }
+      ],
+      "averageRating": 0,
+      "totalReviews": 0,
+      "isActive": true,
+      "isFeatured": false,
+      "createdAt": "2026-04-20T10:00:00.000Z",
+      "updatedAt": "2026-04-20T10:00:00.000Z"
+    }
+  }
+  ```
+
+  ## Common errors
+
+  Category does not exist:
+
+  ```json
+  {
+    "message": "Category not found"
+  }
+  ```
+
+  Missing required fields:
+
+  ```json
+  {
+    "message": "Product validation failed"
+  }
+  ```
+
+  Not logged in or not admin:
+
+  ```json
+  {
+    "message": "Not authorized"
+  }
+  ```
+
+  ## Admin flow
+
+  1. Upload product images with the upload API.
+  2. Save returned `secure_url` and `public_id`.
+  3. Get categories with `GET /api/categories`.
+  4. Use the selected category `_id`.
+  5. Call `POST /api/products`.

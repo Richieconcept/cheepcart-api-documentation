@@ -1,0 +1,112 @@
+info:
+  name: 08 Sort Products Best Selling
+  type: http
+  seq: 8
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/products?sort=best_selling&page=1"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Sort Products Best Selling
+
+  ## Endpoint
+  `GET /api/products?sort=best_selling`
+
+  ## Description
+
+  Returns active products sorted by highest sold count first. Use this for a `Best Selling` or `Popular` sort option.
+
+  ## Authentication
+
+  Not required.
+
+  ## Query parameters
+
+  `sort`
+  - Type: string
+  - Required: yes for this sorting mode.
+  - Value: `best_selling`.
+
+  `page`
+  - Type: number
+  - Required: no.
+  - Default: `1`.
+  - The backend returns `10` products per page.
+
+  ## Backend sort behavior
+
+  ```js
+  { sold: -1 }
+  ```
+
+  Products with higher `sold` values come first.
+
+  ## Example requests
+
+  All products, best selling first:
+
+  ```txt
+  GET /api/products?sort=best_selling
+  ```
+
+  Best sellers in one category:
+
+  ```txt
+  GET /api/products?category=662b7f8f4f9c2e2d7c111111&sort=best_selling
+  ```
+
+  Best sellers within a price range:
+
+  ```txt
+  GET /api/products?min=50000&max=500000&sort=best_selling
+  ```
+
+  ## Sample success response
+
+  ```json
+  {
+    "total": 2,
+    "page": 1,
+    "pages": 1,
+    "products": [
+      {
+        "_id": "662b80d44f9c2e2d7c444444",
+        "name": "iPhone 14 Pro",
+        "slug": "iphone-14-pro",
+        "price": 950000,
+        "sold": 25,
+        "category": {
+          "_id": "662b7f8f4f9c2e2d7c111111",
+          "name": "Phones",
+          "slug": "phones"
+        }
+      },
+      {
+        "_id": "662b80d44f9c2e2d7c333333",
+        "name": "Budget Android Phone",
+        "slug": "budget-android-phone",
+        "price": 120000,
+        "sold": 8,
+        "category": {
+          "_id": "662b7f8f4f9c2e2d7c111111",
+          "name": "Phones",
+          "slug": "phones"
+        }
+      }
+    ]
+  }
+  ```
+
+  ## Frontend notes
+
+  - Label this as `Best Selling`.
+  - This depends on the product `sold` field.
+  - If products have the same `sold` value, the current backend does not add a secondary sort.

@@ -1,0 +1,91 @@
+info:
+  name: 04 Disable Category Admin
+  type: http
+  seq: 4
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/api/categories/662b7f8f4f9c2e2d7c111111"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Disable Category
+
+  ## Endpoint
+  `DELETE /api/categories/:id`
+
+  ## Description
+
+  Disables a category from the admin dashboard. This is a soft delete. The category remains in the database, but its `isActive` value is changed to `false`.
+
+  ## Authentication
+
+  Required. Admin only.
+
+  Header:
+
+  ```json
+  {
+    "Authorization": "Bearer <ADMIN_TOKEN>"
+  }
+  ```
+
+  ## URL parameter
+
+  `id`
+  - Type: string
+  - Required: yes
+  - The category `_id`.
+
+  ## Behavior
+
+  - Sets `isActive` to `false`.
+  - Hides the category from `GET /api/categories`.
+  - Does not delete products in that category.
+  - Does not remove category references from existing products.
+
+  ## Restoring a disabled category
+
+  To restore a category, call the update endpoint and send:
+
+  ```json
+  {
+    "isActive": true
+  }
+  ```
+
+  ## Sample success response
+
+  ```json
+  {
+    "success": true,
+    "message": "Category disabled successfully"
+  }
+  ```
+
+  ## Common errors
+
+  Category not found:
+
+  ```json
+  {
+    "message": "Category not found"
+  }
+  ```
+
+  Not logged in or not admin:
+
+  ```json
+  {
+    "message": "Not authorized"
+  }
+  ```

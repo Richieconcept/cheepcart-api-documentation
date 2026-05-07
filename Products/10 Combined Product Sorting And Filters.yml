@@ -1,0 +1,194 @@
+info:
+  name: 10 Combined Product Sorting And Filters
+  type: http
+  seq: 10
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/products?category=662b7f8f4f9c2e2d7c111111&keyword=iphone&featured=true&min=50000&max=900000&sort=price_asc&page=1"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Combined Product Sorting And Filters
+
+  ## Endpoint
+  `GET /api/products`
+
+  ## Description
+
+  Shows how to combine every product filter and sorting option currently implemented in the backend.
+
+  ## Authentication
+
+  Not required.
+
+  ## All supported query parameters
+
+  `category`
+  - Type: string
+  - Category `_id`.
+  - Filters products by category.
+
+  `keyword`
+  - Type: string
+  - Searches product `name` and `description`.
+  - Case-insensitive.
+
+  `featured`
+  - Type: string
+  - Use only `featured=true`.
+  - Returns products where `isFeatured` is `true`.
+
+  `min`
+  - Type: number
+  - Minimum price.
+
+  `max`
+  - Type: number
+  - Maximum price.
+
+  `sort`
+  - Type: string
+  - Options: `price_asc`, `price_desc`, `best_selling`.
+
+  `page`
+  - Type: number
+  - Page number.
+  - Default: `1`.
+  - Fixed limit: `10` products per page.
+
+  ## All sorting values
+
+  Default sort when `sort` is not sent:
+
+  ```txt
+  Featured first, newest second
+  ```
+
+  Backend:
+
+  ```js
+  { isFeatured: -1, createdAt: -1 }
+  ```
+
+  Price low to high:
+
+  ```txt
+  sort=price_asc
+  ```
+
+  Backend:
+
+  ```js
+  { price: 1 }
+  ```
+
+  Price high to low:
+
+  ```txt
+  sort=price_desc
+  ```
+
+  Backend:
+
+  ```js
+  { price: -1 }
+  ```
+
+  Best selling:
+
+  ```txt
+  sort=best_selling
+  ```
+
+  Backend:
+
+  ```js
+  { sold: -1 }
+  ```
+
+  ## Combined examples
+
+  Category + price range:
+
+  ```txt
+  GET /api/products?category=662b7f8f4f9c2e2d7c111111&min=50000&max=250000
+  ```
+
+  Category + price range + cheapest first:
+
+  ```txt
+  GET /api/products?category=662b7f8f4f9c2e2d7c111111&min=50000&max=250000&sort=price_asc
+  ```
+
+  Search + price high to low:
+
+  ```txt
+  GET /api/products?keyword=iphone&sort=price_desc
+  ```
+
+  Featured + best selling:
+
+  ```txt
+  GET /api/products?featured=true&sort=best_selling
+  ```
+
+  Category + search + price range + sort + page:
+
+  ```txt
+  GET /api/products?category=662b7f8f4f9c2e2d7c111111&keyword=iphone&min=50000&max=900000&sort=price_asc&page=2
+  ```
+
+  Full supported combination:
+
+  ```txt
+  GET /api/products?category=662b7f8f4f9c2e2d7c111111&keyword=iphone&featured=true&min=50000&max=900000&sort=price_asc&page=1
+  ```
+
+  ## Filter order inside backend
+
+  The backend builds one MongoDB filter from all supplied query parameters:
+
+  ```js
+  {
+    isActive: true,
+    category,
+    isFeatured: true,
+    $or: [
+      { name: /keyword/i },
+      { description: /keyword/i }
+    ],
+    price: {
+      $gte: min,
+      $lte: max
+    }
+  }
+  ```
+
+  Then it applies:
+
+  ```txt
+  skip -> limit -> sort
+  ```
+
+  The response includes:
+
+  - `total` - total matching products.
+  - `page` - current page.
+  - `pages` - total pages using fixed limit `10`.
+  - `products` - current page products.
+
+  ## Frontend implementation notes
+
+  - Always keep selected filters in the URL query string.
+  - Reset `page` to `1` when category, keyword, featured, min, max, or sort changes.
+  - Send category `_id`, not category slug.
+  - Send price values as plain numbers.
+  - Only send `featured=true` when the user wants featured products only.
+  - If no sort is selected, do not send `sort`; let backend use featured/newest sorting.

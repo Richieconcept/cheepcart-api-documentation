@@ -1,0 +1,236 @@
+info:
+  name: 01 Get Products
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/products?page=1&sort=price_asc&category=662b7f8f4f9c2e2d7c111111"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Get Products
+
+  ## Endpoint
+  `GET /api/products`
+
+  ## Description
+
+  Returns active products for the storefront. Use this endpoint for the main shop page, category pages, product search, featured sections, price filters, sorting controls, and paginated product grids.
+
+  ## Authentication
+
+  Not required.
+
+  ## Response shape
+
+  This endpoint returns:
+
+  ```json
+  {
+    "total": 1,
+    "page": 1,
+    "pages": 1,
+    "products": []
+  }
+  ```
+
+  There is no `success` field in the current implementation.
+
+  ## Default behavior
+
+  If no query parameters are sent:
+
+  ```txt
+  GET /api/products
+  ```
+
+  The backend:
+  - Returns only products where `isActive` is `true`.
+  - Uses page `1`.
+  - Uses fixed limit `10`.
+  - Sorts by featured first, then newest first.
+
+  Default backend sort:
+
+  ```js
+  { isFeatured: -1, createdAt: -1 }
+  ```
+
+  ## Query parameters
+
+  `page`
+  - Type: number
+  - Required: no
+  - Default: `1`.
+  - The backend uses a fixed limit of `10` products per page.
+
+  `category`
+  - Type: string
+  - Required: no
+  - Must be a category `_id`.
+  - Filters products that belong to that category.
+
+  `featured`
+  - Type: string
+  - Required: no
+  - Send `featured=true` to return only featured products.
+  - Other values are ignored by the current backend.
+
+  `keyword`
+  - Type: string
+  - Required: no
+  - Searches product `name` and `description`.
+  - Search is case-insensitive.
+
+  `min`
+  - Type: number
+  - Required: no
+  - Minimum price filter.
+
+  `max`
+  - Type: number
+  - Required: no
+  - Maximum price filter.
+
+  `sort`
+  - Type: string
+  - Required: no
+  - Allowed values: `price_asc`, `price_desc`, `best_selling`.
+
+  ## Sorting options
+
+  No `sort` query:
+  - Featured products first.
+  - Newest products after featured products.
+
+  ```txt
+  GET /api/products
+  ```
+
+  `sort=price_asc`:
+  - Cheapest products first.
+
+  ```txt
+  GET /api/products?sort=price_asc
+  ```
+
+  `sort=price_desc`:
+  - Most expensive products first.
+
+  ```txt
+  GET /api/products?sort=price_desc
+  ```
+
+  `sort=best_selling`:
+  - Highest `sold` count first.
+
+  ```txt
+  GET /api/products?sort=best_selling
+  ```
+
+  ## Filtering examples
+
+  Products in one category:
+
+  ```txt
+  GET /api/products?category=662b7f8f4f9c2e2d7c111111
+  ```
+
+  Featured products only:
+
+  ```txt
+  GET /api/products?featured=true
+  ```
+
+  Search by keyword:
+
+  ```txt
+  GET /api/products?keyword=iphone
+  ```
+
+  Price range:
+
+  ```txt
+  GET /api/products?min=50000&max=250000
+  ```
+
+  Page 2:
+
+  ```txt
+  GET /api/products?page=2
+  ```
+
+  Category plus sorting:
+
+  ```txt
+  GET /api/products?category=662b7f8f4f9c2e2d7c111111&sort=price_asc
+  ```
+
+  Category plus search:
+
+  ```txt
+  GET /api/products?category=662b7f8f4f9c2e2d7c111111&keyword=iphone
+  ```
+
+  Full combined example:
+
+  ```txt
+  GET /api/products?category=662b7f8f4f9c2e2d7c111111&keyword=iphone&min=50000&max=900000&sort=price_asc&page=2
+  ```
+
+  ## Sample success response
+
+  ```json
+  {
+    "total": 1,
+    "page": 1,
+    "pages": 1,
+    "products": [
+      {
+        "_id": "662b80d44f9c2e2d7c333333",
+        "name": "iPhone 14 Pro",
+        "slug": "iphone-14-pro",
+        "description": "Apple smartphone with premium camera features.",
+        "category": {
+          "_id": "662b7f8f4f9c2e2d7c111111",
+          "name": "Phones",
+          "slug": "phones"
+        },
+        "brand": "Apple",
+        "price": 950000,
+        "comparePrice": 1000000,
+        "discountPercentage": 5,
+        "weight": 1,
+        "stock": 10,
+        "sold": 25,
+        "images": [
+          {
+            "secure_url": "https://res.cloudinary.com/demo/image/upload/products/iphone.jpg",
+            "public_id": "cheepcart/products/iphone"
+          }
+        ],
+        "averageRating": 4.8,
+        "totalReviews": 12,
+        "isActive": true,
+        "isFeatured": true,
+        "createdAt": "2026-04-20T10:00:00.000Z",
+        "updatedAt": "2026-04-20T10:00:00.000Z"
+      }
+    ]
+  }
+  ```
+
+  ## Frontend notes
+
+  - Use `total`, `page`, and `pages` for pagination UI.
+  - Product `category` is populated with `name` and `slug`.
+  - Use `product.slug` when opening the product detail page.
+  - Use `product._id` when adding to cart, reviews, order items, or admin updates.
+  - Public list results exclude inactive products.

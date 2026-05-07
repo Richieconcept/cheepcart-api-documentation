@@ -1,0 +1,206 @@
+info:
+  name: 04 Update Product Admin
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/api/products/662b80d44f9c2e2d7c333333"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "name": "iPhone 14 Pro Max",
+        "price": 980000,
+        "comparePrice": 1100000,
+        "stock": 8,
+        "isFeatured": true,
+        "isActive": true
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Update Product
+
+  ## Endpoint
+  `PUT /api/products/:id`
+
+  ## Description
+
+  Updates a product from the admin dashboard. The backend applies the request body to the product and saves it.
+
+  ## Authentication
+
+  Required. Admin only.
+
+  Headers:
+
+  ```json
+  {
+    "Authorization": "Bearer <ADMIN_TOKEN>",
+    "Content-Type": "application/json"
+  }
+  ```
+
+  ## URL parameter
+
+  `id`
+  - Type: string
+  - Required: yes.
+  - Product `_id`.
+  - This endpoint does not use the product slug.
+
+  ## Request body
+
+  Send only the fields you want to change.
+
+  ```json
+  {
+    "name": "iPhone 14 Pro Max",
+    "price": 980000,
+    "comparePrice": 1100000,
+    "stock": 8,
+    "isFeatured": true,
+    "isActive": true
+  }
+  ```
+
+  ## Fields you can update
+
+  `name`
+  - Type: string
+  - Regenerates the slug when changed.
+
+  `description`
+  - Type: string.
+
+  `category`
+  - Type: string.
+  - Category `_id`.
+  - Current update implementation does not re-check that the category exists, so the admin frontend should only send valid category IDs from `GET /api/categories`.
+
+  `brand`
+  - Type: string.
+
+  `price`
+  - Type: number.
+
+  `comparePrice`
+  - Type: number.
+  - If greater than `price`, the backend recalculates `discountPercentage`.
+
+  `weight`
+  - Type: number.
+
+  `stock`
+  - Type: number.
+
+  `images`
+  - Type: array of image objects.
+
+  `sold`
+  - Type: number.
+  - Affects `sort=best_selling`.
+
+  `averageRating`
+  - Type: number.
+
+  `totalReviews`
+  - Type: number.
+
+  `isActive`
+  - Type: boolean.
+  - Public list/detail endpoints only return active products.
+
+  `isFeatured`
+  - Type: boolean.
+  - Affects default sorting and `featured=true` filter.
+
+  ## Slug behavior
+
+  If `name` changes, the backend regenerates the product slug. If another product already has the same slug, the backend adds a number.
+
+  Example:
+
+  ```txt
+  iphone-14-pro
+  iphone-14-pro-1
+  ```
+
+  ## Discount behavior
+
+  If `comparePrice` is greater than `price`, the backend calculates:
+
+  ```txt
+  discountPercentage = round(((comparePrice - price) / comparePrice) * 100)
+  ```
+
+  ## Sample success response
+
+  ```json
+  {
+    "message": "Product updated successfully",
+    "product": {
+      "_id": "662b80d44f9c2e2d7c333333",
+      "name": "iPhone 14 Pro Max",
+      "slug": "iphone-14-pro-max",
+      "description": "Apple smartphone with premium camera features.",
+      "category": "662b7f8f4f9c2e2d7c111111",
+      "brand": "Apple",
+      "price": 980000,
+      "comparePrice": 1100000,
+      "discountPercentage": 11,
+      "weight": 1,
+      "stock": 8,
+      "sold": 25,
+      "images": [
+        {
+          "secure_url": "https://res.cloudinary.com/demo/image/upload/products/iphone.jpg",
+          "public_id": "cheepcart/products/iphone"
+        }
+      ],
+      "averageRating": 4.8,
+      "totalReviews": 12,
+      "isActive": true,
+      "isFeatured": true,
+      "createdAt": "2026-04-20T10:00:00.000Z",
+      "updatedAt": "2026-04-21T08:30:00.000Z"
+    }
+  }
+  ```
+
+  ## Common errors
+
+  Product not found:
+
+  ```json
+  {
+    "message": "Product not found"
+  }
+  ```
+
+  Not logged in or not admin:
+
+  ```json
+  {
+    "message": "Not authorized"
+  }
+  ```
+
+  ## Admin notes
+
+  - To hide a product without deleting it, update `isActive` to `false`.
+  - To feature a product, update `isFeatured` to `true`.
+  - To replace product images, send the complete new `images` array.
+  - Use `DELETE /api/products/:id` only when the product should be permanently removed.

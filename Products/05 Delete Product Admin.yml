@@ -1,0 +1,102 @@
+info:
+  name: 05 Delete Product Admin
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/api/products/662b80d44f9c2e2d7c333333"
+  headers:
+    - name: Authorization
+      value: Bearer {{token}}
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Delete Product
+
+  ## Endpoint
+  `DELETE /api/products/:id`
+
+  ## Description
+
+  Permanently deletes a product from the database. Use carefully from the admin dashboard.
+
+  ## Authentication
+
+  Required. Admin only.
+
+  Header:
+
+  ```json
+  {
+    "Authorization": "Bearer <ADMIN_TOKEN>"
+  }
+  ```
+
+  ## URL parameter
+
+  `id`
+  - Type: string
+  - Required: yes.
+  - Product `_id`.
+  - This endpoint does not use the product slug.
+
+  ## Important behavior
+
+  The current backend uses:
+
+  ```js
+  Product.findByIdAndDelete(req.params.id)
+  ```
+
+  That means this is a permanent delete, not a soft delete.
+
+  ## Safer alternative
+
+  If the admin only wants to hide a product from the frontend, use:
+
+  ```txt
+  PUT /api/products/:id
+  ```
+
+  Body:
+
+  ```json
+  {
+    "isActive": false
+  }
+  ```
+
+  Public endpoints only return active products, so this hides the product without deleting its database record.
+
+  ## Sample success response
+
+  ```json
+  {
+    "message": "Product permanently deleted"
+  }
+  ```
+
+  ## Common errors
+
+  Product not found:
+
+  ```json
+  {
+    "message": "Product not found"
+  }
+  ```
+
+  Not logged in or not admin:
+
+  ```json
+  {
+    "message": "Not authorized"
+  }
+  ```

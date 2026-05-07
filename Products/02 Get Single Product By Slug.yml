@@ -1,0 +1,110 @@
+info:
+  name: 02 Get Single Product By Slug
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/products/iphone-14-pro"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Get Single Product By Slug
+
+  ## Endpoint
+  `GET /api/products/:slug`
+
+  ## Description
+
+  Returns one active product by its slug. Use this endpoint for the product detail page.
+
+  ## Authentication
+
+  Not required.
+
+  ## URL parameter
+
+  `slug`
+  - Type: string
+  - Required: yes
+  - The product slug generated from the product name.
+  - Example: `iphone-14-pro`.
+
+  ## Important behavior
+
+  The backend searches by:
+
+  ```js
+  {
+    slug: req.params.slug,
+    isActive: true
+  }
+  ```
+
+  This means inactive products will return `Product not found` even if the slug exists in the database.
+
+  ## Example request
+
+  ```txt
+  GET /api/products/iphone-14-pro
+  ```
+
+  ## Sample success response
+
+  The current implementation returns the product object directly:
+
+  ```json
+  {
+    "_id": "662b80d44f9c2e2d7c333333",
+    "name": "iPhone 14 Pro",
+    "slug": "iphone-14-pro",
+    "description": "Apple smartphone with premium camera features.",
+    "category": {
+      "_id": "662b7f8f4f9c2e2d7c111111",
+      "name": "Phones",
+      "slug": "phones"
+    },
+    "brand": "Apple",
+    "price": 950000,
+    "comparePrice": 1000000,
+    "discountPercentage": 5,
+    "weight": 1,
+    "stock": 10,
+    "sold": 25,
+    "images": [
+      {
+        "secure_url": "https://res.cloudinary.com/demo/image/upload/products/iphone.jpg",
+        "public_id": "cheepcart/products/iphone"
+      }
+    ],
+    "averageRating": 4.8,
+    "totalReviews": 12,
+    "isActive": true,
+    "isFeatured": true,
+    "createdAt": "2026-04-20T10:00:00.000Z",
+    "updatedAt": "2026-04-20T10:00:00.000Z"
+  }
+  ```
+
+  ## Error response
+
+  Product not found or inactive:
+
+  ```json
+  {
+    "message": "Product not found"
+  }
+  ```
+
+  ## Frontend notes
+
+  - Use this endpoint after a user clicks a product card.
+  - Route the frontend page with the product `slug`.
+  - The product `category` is populated with `name` and `slug`.
+  - Use `_id` from the response for cart actions, review submission, and admin edits.

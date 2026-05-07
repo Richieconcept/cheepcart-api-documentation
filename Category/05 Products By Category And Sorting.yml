@@ -1,0 +1,208 @@
+info:
+  name: 05 Products By Category And Sorting
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/products?category=662b7f8f4f9c2e2d7c111111&sort=price_asc&page=1"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Products By Category And Sorting
+
+  ## Endpoint
+  `GET /api/products`
+
+  ## Description
+
+  Returns active products, with optional category filtering and product sorting. Use this for category pages, product grids, search results, price filters, and shop sorting controls.
+
+  ## Authentication
+
+  Not required.
+
+  ## Important category rule
+
+  The `category` query parameter expects the category `_id`, not the category slug.
+
+  Correct:
+
+  ```txt
+  GET /api/products?category=662b7f8f4f9c2e2d7c111111
+  ```
+
+  Not supported by the current backend:
+
+  ```txt
+  GET /api/products?category=phones
+  ```
+
+  ## Query parameters
+
+  `category`
+  - Type: string
+  - Required: no
+  - Filter products by category `_id`.
+
+  `sort`
+  - Type: string
+  - Required: no
+  - Allowed values: `price_asc`, `price_desc`, `best_selling`.
+
+  `page`
+  - Type: number
+  - Required: no
+  - Default: `1`.
+  - The backend uses a fixed limit of `10` products per page.
+
+  `featured`
+  - Type: string
+  - Required: no
+  - Use `featured=true` to return only featured products.
+
+  `keyword`
+  - Type: string
+  - Required: no
+  - Searches product `name` and `description`.
+
+  `min`
+  - Type: number
+  - Required: no
+  - Minimum product price.
+
+  `max`
+  - Type: number
+  - Required: no
+  - Maximum product price.
+
+  ## Sort behavior
+
+  No `sort` query:
+  - Featured products first.
+  - Newest products next.
+  - Backend sort: `{ isFeatured: -1, createdAt: -1 }`.
+
+  `sort=price_asc`:
+  - Cheapest products first.
+  - Backend sort: `{ price: 1 }`.
+
+  `sort=price_desc`:
+  - Most expensive products first.
+  - Backend sort: `{ price: -1 }`.
+
+  `sort=best_selling`:
+  - Highest `sold` count first.
+  - Backend sort: `{ sold: -1 }`.
+
+  ## Example requests
+
+  Get all active products:
+
+  ```txt
+  GET /api/products
+  ```
+
+  Get products under one category:
+
+  ```txt
+  GET /api/products?category=662b7f8f4f9c2e2d7c111111
+  ```
+
+  Get category products, cheapest first:
+
+  ```txt
+  GET /api/products?category=662b7f8f4f9c2e2d7c111111&sort=price_asc
+  ```
+
+  Get category products, most expensive first:
+
+  ```txt
+  GET /api/products?category=662b7f8f4f9c2e2d7c111111&sort=price_desc
+  ```
+
+  Get best sellers in one category:
+
+  ```txt
+  GET /api/products?category=662b7f8f4f9c2e2d7c111111&sort=best_selling
+  ```
+
+  Get category products with price range:
+
+  ```txt
+  GET /api/products?category=662b7f8f4f9c2e2d7c111111&min=50000&max=250000
+  ```
+
+  Search within a category:
+
+  ```txt
+  GET /api/products?category=662b7f8f4f9c2e2d7c111111&keyword=iphone
+  ```
+
+  Combine category, search, price, sorting, and pagination:
+
+  ```txt
+  GET /api/products?category=662b7f8f4f9c2e2d7c111111&keyword=iphone&min=50000&max=900000&sort=price_asc&page=2
+  ```
+
+  ## Sample success response
+
+  ```json
+  {
+    "total": 1,
+    "page": 1,
+    "pages": 1,
+    "products": [
+      {
+        "_id": "662b80d44f9c2e2d7c333333",
+        "name": "iPhone 14 Pro",
+        "slug": "iphone-14-pro",
+        "description": "Apple smartphone with premium camera features.",
+        "category": {
+          "_id": "662b7f8f4f9c2e2d7c111111",
+          "name": "Phones",
+          "slug": "phones"
+        },
+        "brand": "Apple",
+        "price": 950000,
+        "comparePrice": 1000000,
+        "discountPercentage": 5,
+        "weight": 1,
+        "stock": 10,
+        "sold": 25,
+        "images": [
+          {
+            "secure_url": "https://res.cloudinary.com/demo/image/upload/products/iphone.jpg",
+            "public_id": "cheepcart/products/iphone"
+          }
+        ],
+        "averageRating": 4.8,
+        "totalReviews": 12,
+        "isActive": true,
+        "isFeatured": true,
+        "createdAt": "2026-04-20T10:00:00.000Z",
+        "updatedAt": "2026-04-20T10:00:00.000Z"
+      }
+    ]
+  }
+  ```
+
+  ## Frontend flow for category pages
+
+  1. Call `GET /api/categories`.
+  2. Display category `name` and `image`.
+  3. Store category `_id` when a user selects a category.
+  4. Call `GET /api/products?category=<categoryId>`.
+  5. Add `sort`, `min`, `max`, `keyword`, or `page` as the user changes filters.
+
+  ## Notes
+
+  - Product category filtering only returns products where `isActive` is `true`.
+  - The backend currently does not accept a custom `limit` query. It always uses `10`.
+  - Price and best-selling sorts do not currently add a secondary tie-break sort.

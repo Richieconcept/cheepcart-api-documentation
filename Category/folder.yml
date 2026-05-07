@@ -1,0 +1,92 @@
+info:
+  name: Categories and Product Sorting
+  type: folder
+  seq: 2
+
+request:
+  auth: inherit
+
+docs:
+  content: |-
+    # Categories and Product Sorting API
+
+    ## What this folder is for
+
+    This folder documents the category endpoints and the way categories connect to product browsing, filtering, and sorting on the frontend.
+
+    Categories are used for:
+    - Storefront category menus.
+    - Product filter pages.
+    - Admin dashboard category management.
+    - Product creation, because each normal product requires a category `_id`.
+
+    ## Category data model
+
+    A category has these main fields:
+
+    `name`
+    - Type: string
+    - Required: yes
+    - Must be unique.
+    - Used as the admin and storefront display name.
+
+    `slug`
+    - Type: string
+    - Generated automatically from `name`.
+    - Example: `Mobile Phones` becomes `mobile-phones`.
+    - The current product category filter uses category `_id`, not slug.
+
+    `image`
+    - Type: string
+    - Optional.
+    - Usually a Cloudinary URL returned by the upload endpoint.
+
+    `order`
+    - Type: number
+    - Optional.
+    - Default: `0`.
+    - Controls category display order. Lower numbers appear first.
+
+    `isActive`
+    - Type: boolean
+    - Default: `true`.
+    - Public category listing only returns active categories.
+
+    ## Public category sorting behavior
+
+    `GET /api/categories` returns only active categories and sorts them by:
+
+    1. `order` ascending.
+    2. `createdAt` ascending when two categories have the same `order`.
+
+    Frontend should display categories in the exact order returned by the API.
+
+    ## Product browsing by category
+
+    Products are filtered by category through:
+
+    `GET /api/products?category=<categoryId>`
+
+    Important:
+    - `category` must be the MongoDB category `_id`.
+    - Do not send the category slug to the current backend for product filtering.
+    - Product responses populate category as `{ name, slug }`.
+
+    ## Product sort values
+
+    Product listing supports these `sort` query values:
+
+    - `price_asc` - cheapest first.
+    - `price_desc` - most expensive first.
+    - `best_selling` - highest `sold` count first.
+
+    If `sort` is not sent, products are returned featured first, then newest first.
+
+    ## Admin notes
+
+    Creating, updating, and deleting categories require:
+
+    `Authorization: Bearer <ADMIN_TOKEN>`
+
+    Deleting a category does not remove it from the database. It sets `isActive` to `false`, which hides it from the public category list.
+  type: text/markdown

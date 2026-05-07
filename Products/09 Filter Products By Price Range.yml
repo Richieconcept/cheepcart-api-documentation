@@ -1,0 +1,153 @@
+info:
+  name: 09 Filter Products By Price Range
+  type: http
+  seq: 9
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/products?min=50000&max=250000&page=1"
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  # Filter Products By Price Range
+
+  ## Endpoint
+  `GET /api/products?min=<minimumPrice>&max=<maximumPrice>`
+
+  ## Description
+
+  Returns active products within a selected price range. Use this for price sliders, minimum and maximum price inputs, or quick filters like `Under 250,000`.
+
+  ## Authentication
+
+  Not required.
+
+  ## Query parameters
+
+  `min`
+  - Type: number
+  - Required: no.
+  - Filters products with `price` greater than or equal to this value.
+
+  `max`
+  - Type: number
+  - Required: no.
+  - Filters products with `price` less than or equal to this value.
+
+  `page`
+  - Type: number
+  - Required: no.
+  - Default: `1`.
+  - The backend returns `10` products per page.
+
+  ## Backend filter behavior
+
+  When both `min` and `max` are sent:
+
+  ```js
+  {
+    price: {
+      $gte: Number(req.query.min),
+      $lte: Number(req.query.max)
+    }
+  }
+  ```
+
+  When only `min` is sent:
+
+  ```js
+  {
+    price: {
+      $gte: Number(req.query.min)
+    }
+  }
+  ```
+
+  When only `max` is sent:
+
+  ```js
+  {
+    price: {
+      $lte: Number(req.query.max)
+    }
+  }
+  ```
+
+  ## Example requests
+
+  Products from 50,000 to 250,000:
+
+  ```txt
+  GET /api/products?min=50000&max=250000
+  ```
+
+  Products from 100,000 upward:
+
+  ```txt
+  GET /api/products?min=100000
+  ```
+
+  Products up to 250,000:
+
+  ```txt
+  GET /api/products?max=250000
+  ```
+
+  Category products in a price range:
+
+  ```txt
+  GET /api/products?category=662b7f8f4f9c2e2d7c111111&min=50000&max=250000
+  ```
+
+  Price range sorted cheapest first:
+
+  ```txt
+  GET /api/products?min=50000&max=250000&sort=price_asc
+  ```
+
+  ## Default sorting with price range
+
+  If no `sort` query is sent, the backend still uses default sorting:
+
+  ```js
+  { isFeatured: -1, createdAt: -1 }
+  ```
+
+  That means featured products appear first inside the selected price range.
+
+  ## Sample success response
+
+  ```json
+  {
+    "total": 1,
+    "page": 1,
+    "pages": 1,
+    "products": [
+      {
+        "_id": "662b80d44f9c2e2d7c333333",
+        "name": "Budget Android Phone",
+        "slug": "budget-android-phone",
+        "price": 120000,
+        "category": {
+          "_id": "662b7f8f4f9c2e2d7c111111",
+          "name": "Phones",
+          "slug": "phones"
+        },
+        "isActive": true
+      }
+    ]
+  }
+  ```
+
+  ## Frontend notes
+
+  - Send numbers only, without currency symbols or commas.
+  - Use `50000`, not `₦50,000`.
+  - Reset `page` to `1` when the user changes price filters.
+  - Price range can be combined with category, keyword, featured, and sort.
