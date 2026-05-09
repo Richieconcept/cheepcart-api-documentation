@@ -69,7 +69,7 @@ docs: |-
     "success": true,
     "message": "Images updated successfully",
     "images": [
-      { "url": "https://res.cloudinary.com/.../newImage1.webp", "public_id": "cheepcart/products/new_abc123" },
-      { "url": "https://res.cloudinary.com/.../newImage2.webp", "public_id": "cheepcart/products/new_xyz456" }
+      { "secure_url": "https://res.cloudinary.com/.../newImage1.webp", "public_id": "cheepcart/products/new_abc123" },
+      { "secure_url": "https://res.cloudinary.com/.../newImage2.webp", "public_id": "cheepcart/products/new_xyz456" }
     ]
   }
