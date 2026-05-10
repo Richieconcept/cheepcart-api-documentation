@@ -1,11 +1,11 @@
 info:
-  name: 01 Get Products
+  name: 12 Get All Products Without Pagination
   type: http
-  seq: 1
+  seq: 12
 
 http:
   method: GET
-  url: "{{baseUrl}}/api/products"
+  url: "{{baseUrl}}/api/products/all"
   auth: inherit
 
 settings:
@@ -15,14 +15,14 @@ settings:
   maxRedirects: 5
 
 docs: |-
-  # Get Products
+  # Get All Products Without Pagination
 
   ## Endpoint
-  `GET /api/products`
+  `GET /api/products/all`
 
   ## Description
 
-  Returns active products for the storefront. Use this endpoint for the main shop page, category pages, product search, featured sections, price filters, sorting controls, and paginated product grids.
+  Returns every active product in one response. Use this when the frontend needs the full product list at once instead of loading products page by page.
 
   ## Authentication
 
@@ -35,26 +35,23 @@ docs: |-
   ```json
   {
     "total": 1,
-    "page": 1,
-    "pages": 1,
     "products": []
   }
   ```
 
-  There is no `success` field in the current implementation.
+  It does not return `page` or `pages` because there is no pagination.
 
   ## Default behavior
 
   If no query parameters are sent:
 
   ```txt
-  GET /api/products
+  GET /api/products/all
   ```
 
   The backend:
   - Returns only products where `isActive` is `true`.
-  - Uses page `1`.
-  - Uses fixed limit `10`.
+  - Returns all matching products.
   - Sorts by featured first, then newest first.
 
   Default backend sort:
@@ -65,11 +62,7 @@ docs: |-
 
   ## Query parameters
 
-  `page`
-  - Type: number
-  - Required: no
-  - Default: `1`.
-  - The backend uses a fixed limit of `10` products per page.
+  This endpoint supports the same filters and sorting options as `GET /api/products`, except `page` is not used.
 
   `category`
   - Type: string
@@ -81,7 +74,6 @@ docs: |-
   - Type: string
   - Required: no
   - Send `featured=true` to return only featured products.
-  - Other values are ignored by the current backend.
 
   `keyword`
   - Type: string
@@ -104,85 +96,36 @@ docs: |-
   - Required: no
   - Allowed values: `price_asc`, `price_desc`, `best_selling`.
 
-  ## Sorting options
+  ## Examples
 
-  No `sort` query:
-  - Featured products first.
-  - Newest products after featured products.
+  Get all active products:
 
   ```txt
-  GET /api/products
+  GET /api/products/all
   ```
 
-  `sort=price_asc`:
-  - Cheapest products first.
+  Get all products in one category:
 
   ```txt
-  GET /api/products?sort=price_asc
+  GET /api/products/all?category=662b7f8f4f9c2e2d7c111111
   ```
 
-  `sort=price_desc`:
-  - Most expensive products first.
+  Get all featured products:
 
   ```txt
-  GET /api/products?sort=price_desc
+  GET /api/products/all?featured=true
   ```
 
-  `sort=best_selling`:
-  - Highest `sold` count first.
+  Get all matching search results:
 
   ```txt
-  GET /api/products?sort=best_selling
+  GET /api/products/all?keyword=iphone
   ```
 
-  ## Filtering examples
-
-  Products in one category:
+  Get all products in a price range, cheapest first:
 
   ```txt
-  GET /api/products?category=662b7f8f4f9c2e2d7c111111
-  ```
-
-  Featured products only:
-
-  ```txt
-  GET /api/products?featured=true
-  ```
-
-  Search by keyword:
-
-  ```txt
-  GET /api/products?keyword=iphone
-  ```
-
-  Price range:
-
-  ```txt
-  GET /api/products?min=50000&max=250000
-  ```
-
-  Page 2:
-
-  ```txt
-  GET /api/products?page=2
-  ```
-
-  Category plus sorting:
-
-  ```txt
-  GET /api/products?category=662b7f8f4f9c2e2d7c111111&sort=price_asc
-  ```
-
-  Category plus search:
-
-  ```txt
-  GET /api/products?category=662b7f8f4f9c2e2d7c111111&keyword=iphone
-  ```
-
-  Full combined example:
-
-  ```txt
-  GET /api/products?category=662b7f8f4f9c2e2d7c111111&keyword=iphone&min=50000&max=900000&sort=price_asc&page=2
+  GET /api/products/all?min=50000&max=250000&sort=price_asc
   ```
 
   ## Sample success response
@@ -190,8 +133,6 @@ docs: |-
   ```json
   {
     "total": 1,
-    "page": 1,
-    "pages": 1,
     "products": [
       {
         "_id": "662b80d44f9c2e2d7c333333",
@@ -229,8 +170,8 @@ docs: |-
 
   ## Frontend notes
 
-  - Use `total`, `page`, and `pages` for pagination UI.
+  - Use this endpoint only when you really need all matching products at once.
+  - For normal shop grids with pagination, use `GET /api/products`.
   - Product `category` is populated with `name` and `slug`.
   - Use `product.slug` when opening the product detail page.
   - Use `product._id` when adding to cart, reviews, order items, or admin updates.
-  - Public list results exclude inactive products.

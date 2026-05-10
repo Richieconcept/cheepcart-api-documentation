@@ -72,9 +72,9 @@ docs: |-
   ```json
   {
     "success": true,
-    "count": 2,
+    "message": "Images uploaded successfully",
     "images": [
-      { "url": "https://res.cloudinary.com/.../image1.webp", "public_id": "cheepcart/products/abc123" },
-      { "url": "https://res.cloudinary.com/.../image2.webp", "public_id": "cheepcart/products/xyz456" }
+      { "secure_url": "https://res.cloudinary.com/.../image1.webp", "public_id": "cheepcart/products/abc123" },
+      { "secure_url": "https://res.cloudinary.com/.../image2.webp", "public_id": "cheepcart/products/xyz456" }
     ]
   }

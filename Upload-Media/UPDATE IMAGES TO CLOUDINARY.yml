@@ -15,11 +15,13 @@ http:
       - name: images
         type: file
         value:
-          - C:\Users\Hi\Downloads\becky's flyer design.png
+          - C:\Users\Hi\Downloads\product-front.jpg
       - name: oldImages
         type: text
-        value: ""
-        contentType: '["cheepcart/general/kbfy4oaberwh3yjwhl9s"]'
+        value: '["cheepcart/products/iphone-old-front"]'
+      - name: type
+        type: text
+        value: products
   auth: inherit
 
 settings:
@@ -69,7 +71,30 @@ docs: |-
     "success": true,
     "message": "Images updated successfully",
     "images": [
-      { "secure_url": "https://res.cloudinary.com/.../newImage1.webp", "public_id": "cheepcart/products/new_abc123" },
-      { "secure_url": "https://res.cloudinary.com/.../newImage2.webp", "public_id": "cheepcart/products/new_xyz456" }
+      {
+        "secure_url": "https://res.cloudinary.com/demo/image/upload/v1234567890/cheepcart/products/product-front.webp",
+        "public_id": "cheepcart/products/product-front"
+      },
+      {
+        "secure_url": "https://res.cloudinary.com/demo/image/upload/v1234567890/cheepcart/products/product-side.webp",
+        "public_id": "cheepcart/products/product-side"
+      }
     ]
   }
+
+  ## Use returned image in update product
+
+  The update product endpoint expects the same image object shape returned here. You can pass one image or the full array:
+
+  ```json
+  {
+    "images": [
+      {
+        "secure_url": "https://res.cloudinary.com/demo/image/upload/v1234567890/cheepcart/products/product-front.webp",
+        "public_id": "cheepcart/products/product-front"
+      }
+    ]
+  }
+  ```
+
+  Then call `PUT /api/products/:id` with `Content-Type: application/json`.

@@ -5,7 +5,7 @@ info:
 
 http:
   method: PUT
-  url: "{{baseUrl}}/api/products/662b80d44f9c2e2d7c333333"
+  url: "{{baseUrl}}/api/products/69fed8fbe8de016dda405843"
   headers:
     - name: Authorization
       value: Bearer {{token}}
@@ -19,6 +19,12 @@ http:
         "price": 980000,
         "comparePrice": 1100000,
         "stock": 8,
+        "images": [
+          {
+            "secure_url": "https://res.cloudinary.com/demo/image/upload/v1234567890/cheepcart/products/test-product-image.webp",
+            "public_id": "cheepcart/products/test-product-image"
+          }
+        ],
         "isFeatured": true,
         "isActive": true
       }
@@ -71,6 +77,12 @@ docs: |-
     "price": 980000,
     "comparePrice": 1100000,
     "stock": 8,
+    "images": [
+      {
+        "secure_url": "https://res.cloudinary.com/demo/image/upload/v1234567890/cheepcart/products/test-product-image.webp",
+        "public_id": "cheepcart/products/test-product-image"
+      }
+    ],
     "isFeatured": true,
     "isActive": true
   }
@@ -108,6 +120,18 @@ docs: |-
 
   `images`
   - Type: array of image objects.
+  - Send uploaded image URLs inside `secure_url`, together with the matching Cloudinary `public_id`.
+
+  Example:
+
+  ```json
+  [
+    {
+      "secure_url": "https://res.cloudinary.com/demo/image/upload/v1234567890/cheepcart/products/test-product-image.webp",
+      "public_id": "cheepcart/products/test-product-image"
+    }
+  ]
+  ```
 
   `sold`
   - Type: number.

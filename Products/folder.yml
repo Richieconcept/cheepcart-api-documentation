@@ -36,6 +36,7 @@ docs:
     These do not require authentication:
 
     - `GET /api/products`
+    - `GET /api/products/all`
     - `GET /api/products/:slug`
 
     Public endpoints only return products where:
@@ -158,6 +159,8 @@ docs:
     - `page=<page number>`
 
     The backend currently uses a fixed limit of `10` products per page.
+
+    Use `GET /api/products/all` when the frontend needs every active product in one response without pagination. It supports the same filters and sorting options, but does not return `page` or `pages`.
 
     ## Category rule
 
